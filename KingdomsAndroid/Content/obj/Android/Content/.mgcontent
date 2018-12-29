@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SourceFileCollection xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Profile>Reach</Profile>
+  <Platform>Android</Platform>
+  <Config />
+  <SourceFiles>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/attack.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/Black.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/Graphics4.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/Graphics4_old.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/grassBack.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/Hit.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/HP.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/InfoBar.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/InfoBox.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/InGameButton.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/maprect.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/MenuButton.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/MenuFont.spritefont</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/mus2.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/musInGame1.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/NewGame.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/NewRound.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/PicBox.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/PicBox2.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/PicBox3.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/RangeMark.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/Slider.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/SliderPoint.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/TextBox.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/TopBar.png</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/UnitFont.spritefont</File>
+    <File>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/units2.png</File>
+  </SourceFiles>
+  <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+  </DestFiles>
+</SourceFileCollection>

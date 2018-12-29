@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FA096DCE-A577-4C36-883F-F92870F66BDD}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>KingdomsAndroid</RootNamespace>
+    <AssemblyName>KingdomsAndroid</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <AndroidApplication>true</AndroidApplication>
+    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <AndroidSupportedAbis>armeabi-v7a%3bx86</AndroidSupportedAbis>
+    <AndroidStoreUncompressedFileExtensions>.m4a</AndroidStoreUncompressedFileExtensions>
+    <MandroidI18n />
+    <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
+    <MonoGamePlatform>Android</MonoGamePlatform>
+    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\$(MonoGamePlatform)\$(Platform)\$(Configuration)\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;ANDROID</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
+    <AndroidLinkMode>None</AndroidLinkMode>
+    <AotAssemblies>false</AotAssemblies>
+    <EnableLLVM>false</EnableLLVM>
+    <BundleAssemblies>false</BundleAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\$(MonoGamePlatform)\$(Platform)\$(Configuration)\</OutputPath>
+    <DefineConstants>TRACE;ANDROID</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mono.Android" />
+    <Reference Include="mscorlib" />
+    <Reference Include="OpenTK-1.0" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+    <Reference Include="MonoGame.Framework">
+      <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\Android\MonoGame.Framework.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Activity1.cs" />
+    <Compile Include="Camera.cs" />
+    <Compile Include="CastleMenu.cs" />
+    <Compile Include="Game1.cs" />
+    <Compile Include="HUD.cs" />
+    <Compile Include="InfoBox.cs" />
+    <Compile Include="ListItem.cs" />
+    <Compile Include="MainMenu.cs" />
+    <Compile Include="MapList.cs" />
+    <Compile Include="MenuButton.cs" />
+    <Compile Include="NewGame.cs" />
+    <Compile Include="PauseMenu.cs" />
+    <Compile Include="PictureBox.cs" />
+    <Compile Include="Player.cs" />
+    <Compile Include="PlayerManager.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Resources\Resource.Designer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Shop.cs" />
+    <Compile Include="SliderBar.cs" />
+    <Compile Include="Soldat.cs" />
+    <Compile Include="TextBox.cs" />
+    <Compile Include="Tile.cs" />
+    <Compile Include="TileManager.cs" />
+    <Compile Include="TouchHandler.cs" />
+    <Compile Include="UnitMenu.cs" />
+    <Compile Include="UnitMenuButton.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\InGameFont.spritefont" />
+    <None Include="Content\KingdomsContent.contentproj" />
+    <None Include="Content\MenuFont.spritefont" />
+    <None Include="Content\UnitFont.spritefont" />
+    <None Include="Content\UnitMenu.spritefont" />
+    <None Include="Resources\AboutResources.txt" />
+    <None Include="Assets\AboutAssets.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Values\Strings.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Drawable\Icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Content\Maps\" />
+    <Folder Include="Resources\Layout\" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Drawable\Splash.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Values\Styles.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <MonoGameContentReference Include="Content\Content.mgcb" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\AndroidManifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\attack.png" />
+    <Content Include="Content\Black.png" />
+    <Content Include="Content\Graphics4.png" />
+    <Content Include="Content\Graphics4_old.png" />
+    <Content Include="Content\grassBack.png" />
+    <Content Include="Content\Hit.png" />
+    <Content Include="Content\HP.png" />
+    <Content Include="Content\InfoBar.png" />
+    <Content Include="Content\InfoBox.png" />
+    <Content Include="Content\InGameButton.png" />
+    <Content Include="Content\maprect.png" />
+    <Content Include="Content\MenuButton.png" />
+    <Content Include="Content\mus2.png" />
+    <Content Include="Content\musInGame1.png" />
+    <Content Include="Content\NewGame.png" />
+    <Content Include="Content\NewRound.png" />
+    <Content Include="Content\PicBox.png" />
+    <Content Include="Content\PicBox2.png" />
+    <Content Include="Content\PicBox3.png" />
+    <Content Include="Content\RangeMark.png" />
+    <Content Include="Content\Slider.png" />
+    <Content Include="Content\SliderPoint.png" />
+    <Content Include="Content\TextBox.png" />
+    <Content Include="Content\TopBar.png" />
+    <Content Include="Content\units2.png" />
+    <Content Include="Game.ico" />
+    <Content Include="GameThumbnail.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
