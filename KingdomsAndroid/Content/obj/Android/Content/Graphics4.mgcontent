@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <SourceFile>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/Graphics4.png</SourceFile>
-  <SourceTime>2018-12-29T23:24:25.454734+01:00</SourceTime>
-  <DestFile>C:/Users/isaks/source/repos/KingdomsAndroid/KingdomsAndroid/Content/bin/Android/Content/Graphics4.xnb</DestFile>
-  <DestTime>2018-12-29T23:25:15.6856037+01:00</DestTime>
+  <SourceFile>C:/Users/isaks/Documents/KingdomsAndroid/KingdomsAndroid/Content/Graphics4.png</SourceFile>
+  <SourceTime>2019-01-02T23:35:26.725825+01:00</SourceTime>
+  <DestFile>C:/Users/isaks/Documents/KingdomsAndroid/KingdomsAndroid/Content/bin/Android/Content/Graphics4.xnb</DestFile>
+  <DestTime>2019-01-05T10:59:32.6414648+01:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2018-12-08T17:35:54+01:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

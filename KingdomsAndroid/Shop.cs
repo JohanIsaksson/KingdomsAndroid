@@ -21,12 +21,12 @@ namespace KingdomsAndroid
         Texture2D background;
         Vector2 backpos;
 
-        List<PictureBox> boxes;
+        List<PictureButton> boxes;
         Texture2D unitset;
         int color;
 
-        MenuButton purchase;
-        MenuButton cancel;
+        TouchButton purchase;
+        TouchButton cancel;
 
         Vector2 musPos;
         Texture2D mouse;
@@ -49,7 +49,7 @@ namespace KingdomsAndroid
         public Shop(Player Pplayer,Game1 game1)        
         {
             player = Pplayer;
-            boxes = new List<PictureBox>();
+            boxes = new List<PictureButton>();
             game = game1;
 
             background = game.Content.Load<Texture2D>("NewGame");
@@ -72,27 +72,31 @@ namespace KingdomsAndroid
             else if (player.color=="Red")
                 color =1;
 
-            purchase = new MenuButton(game);
-            purchase.Initialize(new Vector2(backpos.X + (background.Width - 288), (background.Height - 64 - 8)));
+            purchase = new UnitMenuButton(game);
+            purchase.Position = new Vector2(backpos.X + (background.Width - 288), (background.Height - 64 - 8));
             purchase.Text = " Purchase";
 
-            cancel = new MenuButton(game);
-            cancel.Initialize(new Vector2((backpos.X + 32), (background.Height - 64 - 8)));
+            cancel = new UnitMenuButton(game);
+            cancel.Position = new Vector2((backpos.X + 32), (background.Height - 64 - 8));
             cancel.Text = "   Cancel";
 
 
 
             for (int box = 0; box <= 5; box++)
             {
-                boxes.Add(new PictureBox());
-                boxes[box].marked = false;
+                /*PictureButton pb = new PictureButton(game,
+                                            backpos + new Vector2(64, 64) + new Vector2(box * 64, 0) + new Vector2(box * 24, 0),
+                                            game.Content.Load<Texture2D>("PicBox"),
+                                            );*/
+                boxes.Add(new PictureButton(game));
+                boxes[box].state = PictureButton.State.normal;
                 boxes[box].background = game.Content.Load<Texture2D>("PicBox");
                 boxes[box].Initialize(backpos + new Vector2(64, 64) + new Vector2(box * 64, 0) + new Vector2(box*24, 0));
                 boxes[box].image = unitset;
                 boxes[box].sour_img=new Rectangle(box*32,color*32,32,32);                
             }
 
-            purchase.active = false;
+            purchase.active = true;
             //boxes[0].marked = true;
             //boxes[0].background = game.Content.Load<Texture2D>("PicBox3");
                         
@@ -116,16 +120,16 @@ namespace KingdomsAndroid
 
 
             int typ = 1;
-            foreach (PictureBox box in boxes)
+            foreach (PictureButton box in boxes)
             {                
-                if (box.state == PictureBox.BState.hover && mus.LeftButton == ButtonState.Pressed)
+                if (box.state == PictureButton.State.marked && mus.LeftButton == ButtonState.Pressed)
                 {
-                    foreach (PictureBox boxe in boxes)
+                    foreach (PictureButton boxe in boxes)
                     {
-                        boxe.marked = false;
+                        boxe.state = PictureButton.State.normal;
                         boxe.background = game.Content.Load<Texture2D>("PicBox");                    
                     }
-                    box.marked = true;
+                    box.state = PictureButton.State.marked;
                     box.background = game.Content.Load<Texture2D>("PicBox3");
                     break;                    
                 }
@@ -173,26 +177,26 @@ namespace KingdomsAndroid
             
             }
 
-            if (cost > gold)
+            /*if (cost > gold)
                 purchase.active = false;
             else
-                purchase.active = true;
+                purchase.active = true;*/
                 
 
             purchase.Update();
             cancel.Update();
 
-            if (cancel.state == MenuButton.ButtonState.Pressed)
+            if (cancel.state == TouchButton.ButtonState.Clicked)
             {
                 player.Pstate = Player.state.SelectUnit;
                 player.HideCastleMenu();           
             }
-            else if (purchase.state == MenuButton.ButtonState.Pressed)
+            else if (purchase.state == TouchButton.ButtonState.Clicked)
             { 
                 int a=0;
-                foreach (PictureBox box in boxes)
+                foreach (PictureButton box in boxes)
                 {
-                    if (box.marked==true)
+                    if (box.state == PictureButton.State.marked)
                         break;
                     a++;               
                 
@@ -207,6 +211,14 @@ namespace KingdomsAndroid
 
         }
 
+        public void UnMarkAll()
+        {
+            foreach (PictureButton box in boxes)
+            {
+                box.state = PictureButton.State.normal;
+            }
+        }
+
 
 
         public void Draw(SpriteBatch SB)
@@ -215,7 +227,7 @@ namespace KingdomsAndroid
 
 
 
-            foreach (PictureBox box in boxes)
+            foreach (PictureButton box in boxes)
                 box.Draw(SB);
 
             purchase.Draw(SB);

@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace KingdomsAndroid
 {
-    public class Soldat
+    public class Soldier
     {
         public Vector2 Pos { get; set; }
         public Rectangle Rect {get; set;}
@@ -39,7 +39,7 @@ namespace KingdomsAndroid
         int Team;
         
 
-        public Soldat(Game1 pgame,string color)
+        public Soldier(Game1 pgame,string color)
         {
             PlayerColor = color;
             if (color == "Blue")

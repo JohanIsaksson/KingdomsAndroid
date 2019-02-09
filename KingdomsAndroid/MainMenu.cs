@@ -13,9 +13,9 @@ namespace KingdomsAndroid
 {
     public class MainMenu
     {
-        MenuButton NewGame;
-        MenuButton LoadGame;
-        MenuButton Exit;
+        TouchButton NewGame;
+        TouchButton LoadGame;
+        TouchButton Exit;
 
         Texture2D BG;
         Rectangle BGrect;
@@ -40,12 +40,12 @@ namespace KingdomsAndroid
         /// <param name="H"></param>
         public void Initialize(int W,int H)
         {
-            NewGame.Initialize(new Vector2((W / 2) - 128, (H / 2) - 100));
+            NewGame.Position = new Vector2((W / 2) - 128, (H / 2) - 100);
             NewGame.Text = "New Game";
-            LoadGame.Initialize(new Vector2((W / 2) - 128, (H / 2) - 32));
+            LoadGame.Position = new Vector2((W / 2) - 128, (H / 2) - 32);
             LoadGame.Text = "Load Game";
             LoadGame.active = false;
-            Exit.Initialize(new Vector2((W / 2) - 128, (H / 2) + 36));
+            Exit.Position = new Vector2((W / 2) - 128, (H / 2) + 36);
             Exit.Text = "Exit";
 
 
@@ -63,11 +63,11 @@ namespace KingdomsAndroid
             LoadGame.Update();
             Exit.Update();
 
-            if (NewGame.state == MenuButton.ButtonState.Clicked)
+            if (NewGame.state == TouchButton.ButtonState.Clicked)
                 game.state = Game1.GameState.NewGame;
-            else if (LoadGame.state == MenuButton.ButtonState.Clicked)
+            else if (LoadGame.state == TouchButton.ButtonState.Clicked)
                 game.state = Game1.GameState.LoadGame;
-            else if (Exit.state == MenuButton.ButtonState.Clicked)
+            else if (Exit.state == TouchButton.ButtonState.Clicked)
                 game.state = Game1.GameState.Exit;
                 
             

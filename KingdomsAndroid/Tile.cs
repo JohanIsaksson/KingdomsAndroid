@@ -18,6 +18,9 @@ namespace KingdomsAndroid
         Rectangle Animation;
 
         public int Type { get; set; }
+        public int Armor { get; set; }
+        public int WalkPenalty { get; set; }
+        
 
 
         public int TileSize
@@ -47,18 +50,18 @@ namespace KingdomsAndroid
                 new Vector2(5,0), // 10 Road →↓
                 new Vector2(1,1), // 11 Water
                 new Vector2(2,1), // 12 Castle neutral
-                new Vector2(3,2), // 13 Beach up
-                new Vector2(2,2), // 14 Beach down
-                new Vector2(0,2), // 15 Beach right
-                new Vector2(1,2), // 16 Beach left
-                new Vector2(1,3), // 17 Beach ←↓
-                new Vector2(0,3), // 18 Beach ↓→
-                new Vector2(2,3), // 19 Beach ↑→
-                new Vector2(3,3), // 20 Beach ←↑
-                new Vector2(0,4), // 21 Beach →↑
-                new Vector2(0,5), // 22 Beach ↑←
-                new Vector2(1,4), // 23 Beach →↓
-                new Vector2(1,5), // 24 Beach ↓←
+                new Vector2(3,2), // 13 Beach ↓
+                new Vector2(2,2), // 14 Beach ↑
+                new Vector2(0,2), // 15 Beach ←
+                new Vector2(1,2), // 16 Beach →
+                new Vector2(1,3), // 17 Beach ↓←
+                new Vector2(0,3), // 18 Beach →↓
+                new Vector2(2,3), // 19 Beach →↑
+                new Vector2(3,3), // 20 Beach ↑←
+                new Vector2(0,4), // 21 Beach ↑→
+                new Vector2(0,5), // 22 Beach ←↑
+                new Vector2(1,4), // 23 Beach ↓→
+                new Vector2(1,5), // 24 Beach ←↓
                 new Vector2(1,0), // 25 House neutral 
                 new Vector2(4,1), // 26 House blue 
                 new Vector2(4,2), // 27 Castle blue

@@ -145,6 +145,9 @@
 /processorParam:TextureFormat=Color
 /build:maprect.png
 
+#begin Maps/level7.map
+/copy:Maps/level7.map
+
 #begin MenuButton.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -283,6 +286,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:SliderPoint.png
+
+#begin soldierbuttons.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:soldierbuttons.png
 
 #begin TextBox.png
 /importer:TextureImporter

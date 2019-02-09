@@ -25,52 +25,84 @@ namespace KingdomsAndroid
         public int MapTileWidth { get; set; }
 
         public int TileSize { get; set; }
-        public Viewport Viewport { get; set; }
-        
 
-        Vector2 CamPos;
-        string thiskey;
-        string lastkey;
+        public Rectangle MapBounds { get; set; }
 
-        
+        private Game1 game;       
              
 
-        Random rand; //tillfällig
-
-
-
-        public TileManager(ContentManager Content)
+        public TileManager(Game1 g)
         {
-            TileSet = Content.Load<Texture2D>("Graphics4");
-            MapTileHeight = 64;
-            MapTileWidth = 64;
+            game = g;
+            TileSet = game.Content.Load<Texture2D>("Graphics4");
+
+            Map = new List<Tile>();
             TileSize = 32;
-            Viewport = new Viewport(0, 0, MapTileWidth * TileSize, MapTileHeight * TileSize, 0, 1);
+            LoadPresetMap();
         }
 
-        public void initialize()
-        {           
-
-            CamPos = new Vector2(0, 0);
-            rand = new Random();
-            Map = new List<Tile>();
-
-            for (int x = 0; x < MapTileWidth; x++)
+        private void LoadPresetMap()
+        {
+            int[] preset1 =
             {
-                for (int y = 0; y < MapTileHeight; y++)
-                {
-                    Map.Add(new Tile(rand.Next(0, 42), x, y));
+                11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
+                11,18,13,13,13,13,13,13,17,11,11,11,11,18,13,13,13,13,17,11,
+                11,16,00,02,03,09,05,05,24,17,11,11,18,23,00,00,00,00,15,11,
+                11,16,00,04,25,06,00,00,00,15,11,11,16,00,00,00,00,00,15,11,
+                11,16,00,00,40,36,00,00,00,15,11,18,23,00,00,00,00,00,15,11,
+                11,16,01,25,02,06,00,00,22,20,11,16,00,00,00,00,00,00,15,11,
+                11,16,01,40,05,08,00,00,15,11,18,23,00,00,00,00,00,00,15,11,
+                11,19,21,00,03,00,00,00,15,11,16,00,00,00,00,00,00,00,15,11,
+                11,11,19,14,14,14,14,14,20,11,19,14,14,14,14,14,14,14,20,11,
+                11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11
+            };
+
+            int[] preset2 =
+            {
+                11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
+                11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
+                11,11,11,11,11,18,13,13,17,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
+                11,11,11,11,18,23,00,02,15,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
+                11,11,11,11,16,00,02,00,15,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
+                11,11,11,11,16,00,06,00,15,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
+                11,11,11,18,23,00,06,00,24,17,11,11,11,11,11,11,11,11,11,11,11,11,11,
+                11,11,18,23,04,00,06,01,00,15,11,11,11,11,11,11,11,11,18,13,17,11,11,
+                11,11,16,02,02,26,06,00,04,24,17,11,11,11,18,13,13,13,23,25,15,11,11,
+                11,11,16,02,00,00,06,02,04,01,24,13,13,13,23,04,04,00,00,02,15,11,11,
+                11,11,16,00,27,00,06,02,04,01,00,02,00,00,09,05,05,05,10,00,15,11,11,
+                11,11,16,02,09,05,08,04,00,00,02,25,09,05,08,25,01,01,06,02,15,11,11,
+                11,11,16,26,06,04,00,00,02,00,09,05,08,00,02,00,00,04,06,32,15,11,11,
+                11,11,16,02,06,01,01,25,09,05,08,25,02,00,00,04,09,05,08,02,15,11,11,
+                11,11,16,00,07,05,05,05,08,00,00,02,00,01,04,02,06,00,33,00,15,11,11,
+                11,11,16,02,00,00,04,04,22,14,14,14,21,01,04,02,06,00,00,02,15,11,11,
+                11,11,16,25,22,14,14,14,20,11,11,11,19,21,04,00,06,32,02,02,15,11,11,
+                11,11,19,14,20,11,11,11,11,11,11,11,11,16,00,01,06,00,04,22,20,11,11,
+                11,11,11,11,11,11,11,11,11,11,11,11,11,19,21,00,06,00,22,20,11,11,11,
+                11,11,11,11,11,11,11,11,11,11,11,11,11,11,16,00,06,00,15,11,11,11,11,
+                11,11,11,11,11,11,11,11,11,11,11,11,11,11,16,00,02,00,15,11,11,11,11,
+                11,11,11,11,11,11,11,11,11,11,11,11,11,11,16,02,00,22,20,11,11,11,11,
+                11,11,11,11,11,11,11,11,11,11,11,11,11,11,19,14,14,20,11,11,11,11,11,
+                11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
+                11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11
+            };
+
+            MapTileHeight = 25;
+            MapTileWidth = 23;
+            for (int y = 0; y < MapTileHeight; y++)
+            {
+                for (int x = 0; x < MapTileWidth; x++)
+                {                
+                    Map.Add(new Tile(preset2[y*MapTileWidth + x], x, y));
                 }
             }
-            //Map[10*MapTileHeight + 10].SetTile(27, 10, 10);
-         
+
+            MapBounds = new Rectangle(0, 0, MapTileWidth * TileSize, MapTileHeight * TileSize);
         }
         
 
         public void LoadMap(string mapname)
         {
-            return;
-            StreamReader srFile = new StreamReader("Maps/" + mapname);
+            StreamReader srFile = new StreamReader(game.Content.RootDirectory + "/Maps/" + mapname);
             string strLine = "";            
             int x = 0;
             int y = 0;
@@ -81,7 +113,7 @@ namespace KingdomsAndroid
                 {
                     strLine = srFile.ReadLine();
                     string[] splitThis = Regex.Split(strLine.Substring(0, strLine.Length - 1), ",");
-
+                    MapTileWidth = splitThis.Length;
                     for (x = 0; x < MapTileWidth; x++)
                     {
                         if (splitThis[x] == "")
@@ -93,7 +125,8 @@ namespace KingdomsAndroid
                     x = 0;
                     y += 1;
 
-                } while (!srFile.EndOfStream && y < MapTileHeight);
+                } while (!srFile.EndOfStream);
+                MapTileHeight = y;
             }
             catch
             { 
@@ -111,81 +144,29 @@ namespace KingdomsAndroid
         {
         
         }
-        
 
-        public void MoveCam()
+        public Tile tileAt(Vector2 pos)
         {
-            Vector2 cameraMovement = Vector2.Zero;
-
-            TouchCollection touchCollection = TouchPanel.GetState();
-
-            foreach (TouchLocation touch in touchCollection)
+            foreach (Tile t in Map)
             {
-
-                if ((touch.State == TouchLocationState.Moved)/* || (touch.State == TouchLocationState.Pressed)*/)
+                if (t.Position == pos)
                 {
-                    TouchLocation prevLocation;
-
-                    // Sometimes TryGetPreviousLocation can fail. Bail out early if this happened
-                    // or if the last state didn't move
-                    if (touch.TryGetPreviousLocation(out prevLocation))
-                    {
-                        // get your delta
-                        var delta = touch.Position - prevLocation.Position;
-
-                        //CamPos = delta;
-                    }
-                    break;
-                    // Everything is fine
-                    //state = ButtonState.Clicked;
+                    return t;
                 }
             }
-
-
-            /*KeyboardState key = Keyboard.GetState();
-
-
-            if (key.IsKeyDown(Keys.Up) == true && CamPos.Y > 0)
-                thiskey = "Up";
-            else if (key.IsKeyDown(Keys.Down) == true && (CamPos.Y + viewH) < 31)
-                thiskey = "Down";
-            else if (key.IsKeyDown(Keys.Left) == true && CamPos.X > 0)
-                thiskey = "Left";
-            else if (key.IsKeyDown(Keys.Right) == true && (CamPos.X + viewW) < 31)
-                thiskey = "Right";
-            else if (key.IsKeyDown(Keys.C) == true)
-                thiskey = "Castle";
-            else
-                thiskey = "";
-
-
-            if (thiskey == "Up")
-                CamPos.Y -= 1;
-            if (thiskey == "Down")
-                CamPos.Y += 1;
-            if (thiskey == "Left")
-                CamPos.X -= 1;
-            if (thiskey=="Right")
-                CamPos.X += 1;
-            if (thiskey == "Castle" && thiskey != lastkey)            
-                Map[10, 10].SetTile(27, 10, 10);
-
-            
-            lastkey = thiskey;*/
-
+            return null;
         }
-
-
+       
         public void Update()
         {
-            MoveCam();
+            //MoveCam();
 
             // Update only the visible tiles
-            for (int x = 0; x < MapTileWidth; x++)
+            for (int y = 0; y < MapTileHeight; y++)
             {
-                for (int y = 0; y < MapTileHeight; y++)
+                for (int x = 0; x < MapTileWidth; x++)
                 {
-                    Map[y * MapTileHeight + x].Update();
+                    Map[y * MapTileWidth + x].Update();
                 }
             }
         }
@@ -198,7 +179,7 @@ namespace KingdomsAndroid
             {
                 for (int y = 0; y < MapTileHeight; y++)
                 {
-                    SB.Draw(TileSet, new Rectangle(x * size, y * size, size, size), Map[y*MapTileHeight + x].BackGround, Color.White);                    
+                    SB.Draw(TileSet, new Rectangle(x * size, y * size, size, size), Map[y*MapTileWidth + x].BackGround, Color.White);                    
                 }
             }
         }

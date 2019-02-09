@@ -14,10 +14,10 @@ namespace KingdomsAndroid
     /// </summary>
     public class PauseMenu
     {
-        MenuButton ResumeGame;
-        MenuButton SaveGame;
-        MenuButton LoadGame;
-        MenuButton Exit;
+        TouchButton ResumeGame;
+        TouchButton SaveGame;
+        TouchButton LoadGame;
+        TouchButton Exit;
 
         Texture2D BG;
         Rectangle BGrect;
@@ -50,13 +50,13 @@ namespace KingdomsAndroid
         /// <param name="H"></param>
         public void Initialize(int W, int H)
         {
-            ResumeGame.Initialize(new Vector2((W / 2) - 128, (H / 2) - 128));
+            ResumeGame.Position = new Vector2((W / 2) - 128, (H / 2) - 128);
             ResumeGame.Text = "Resume";
-            LoadGame.Initialize(new Vector2((W / 2) - 128, (H / 2) - 60));
+            LoadGame.Position = new Vector2((W / 2) - 128, (H / 2) - 60);
             LoadGame.Text = "Load Game";
-            SaveGame.Initialize(new Vector2((W / 2) - 128, (H / 2) +10));
+            SaveGame.Position = new Vector2((W / 2) - 128, (H / 2) +10);
             SaveGame.Text = "Save Game";
-            Exit.Initialize(new Vector2((W / 2) - 128, (H / 2) + 78));
+            Exit.Position = new Vector2((W / 2) - 128, (H / 2) + 78);
             Exit.Text = "Exit";
 
             BGrect = new Rectangle(0, 0, 1080, 1920);
@@ -72,15 +72,11 @@ namespace KingdomsAndroid
             SaveGame.Update();
             Exit.Update();
 
-
-            MouseState mus = Mouse.GetState();
-            musp = new Vector2(mus.X, mus.Y);
-
-            if (ResumeGame.state == MenuButton.ButtonState.Pressed)
+            if (ResumeGame.state == TouchButton.ButtonState.Pressed)
                 game.state = Game1.GameState.Running;
-            else if (LoadGame.state == MenuButton.ButtonState.Pressed)
+            else if (LoadGame.state == TouchButton.ButtonState.Pressed)
                 game.state = Game1.GameState.LoadGame;
-            else if (Exit.state == MenuButton.ButtonState.Pressed)
+            else if (Exit.state == TouchButton.ButtonState.Pressed)
                 game.state = Game1.GameState.MainMenu;
 
 

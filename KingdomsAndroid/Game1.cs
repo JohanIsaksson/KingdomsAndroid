@@ -46,6 +46,8 @@ namespace KingdomsAndroid
         public static int screenH = 512;
         public static int screenW = 832;
 
+        private Viewport gameView, bottomHUD, sideHUD;
+
 
 
         public Game1()
@@ -64,6 +66,33 @@ namespace KingdomsAndroid
         {
             // TODO: Add your initialization logic here
 
+            screenW = GraphicsDevice.PresentationParameters.BackBufferWidth;
+            screenH = GraphicsDevice.PresentationParameters.BackBufferHeight;
+
+            gameView = new Viewport();
+            gameView.X = 32;
+            gameView.Y = 0;
+            gameView.Width = screenW - 128;
+            gameView.Height = screenH - 64;
+            gameView.MinDepth = 0;
+            gameView.MaxDepth = 1;
+
+            sideHUD = new Viewport();
+            sideHUD.X = screenW - 128+32;
+            sideHUD.Y = 0;
+            sideHUD.Width = 128;
+            sideHUD.Height = screenH - 64;
+            sideHUD.MinDepth = 0;
+            sideHUD.MaxDepth = 1;
+
+            bottomHUD = new Viewport();
+            bottomHUD.X = 32;
+            bottomHUD.Y = screenH - 64;
+            bottomHUD.Width = screenW;
+            bottomHUD.Height = 64;
+            bottomHUD.MinDepth = 0;
+            bottomHUD.MaxDepth = 1;
+
             base.Initialize();
         }
 
@@ -76,11 +105,11 @@ namespace KingdomsAndroid
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            graphics.PreferredBackBufferWidth = 832;
-            graphics.PreferredBackBufferHeight = 512;
+            graphics.PreferredBackBufferWidth = screenW;
+            graphics.PreferredBackBufferHeight = screenH;
             graphics.ApplyChanges();
-            
-            Camera = new Camera(GraphicsDevice.Viewport);
+
+            Camera = new Camera(gameView);
 
             //IsFixedTimeStep = false;
             //graphics.SynchronizeWithVerticalRetrace = false;
@@ -93,8 +122,7 @@ namespace KingdomsAndroid
             pausemenu.Initialize(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
             newgame = new NewGame(this);
 
-            Tilemanager = new TileManager(Content);
-            Tilemanager.initialize();
+            Tilemanager = new TileManager(this);
 
             Playermanager = new PlayerManager(this, 2, 25);
 
@@ -120,30 +148,11 @@ namespace KingdomsAndroid
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            TouchManager.Instance.Update(Camera);
+
             // Update camera position
-            Vector2 cameraMovement = Vector2.Zero;
-            TouchCollection touchCollection = TouchPanel.GetState();
-            foreach (TouchLocation touch in touchCollection)
-            {
-                if ((touch.State == TouchLocationState.Moved) || (touch.State == TouchLocationState.Pressed))
-                {
-                    TouchLocation prevLocation;
-
-                    // Sometimes TryGetPreviousLocation can fail. Bail out early if this happened
-                    // or if the last state didn't move
-                    if (touch.TryGetPreviousLocation(out prevLocation))
-                    {
-                        // get your delta
-                        var delta = touch.Position - prevLocation.Position;
-
-                        cameraMovement = -delta;
-                    }
-                    break;
-                    // Everything is fine
-                    //state = ButtonState.Clicked;
-                }
-            }
-            position += cameraMovement/Camera.Zoom;
+            //Vector2 cameraMovement = Vector2.Zero;            
+            //position += cameraMovement/Camera.Zoom;            
 
             switch (state)
             {
@@ -165,7 +174,7 @@ namespace KingdomsAndroid
                     break;
 
                 case GameState.LoadGame:
-                    Tilemanager.LoadMap(mapname);
+                    //Tilemanager.LoadMap(mapname);
                     Playermanager.player[Playermanager.playing].NewRound();
                     Playermanager.player[Playermanager.playing].NewRound();
                     state = GameState.Running;
@@ -181,7 +190,10 @@ namespace KingdomsAndroid
                     Playermanager.Update(gameTime, this);
                     Tilemanager.Update();
                     Camera.Zoom = 2f;
-                    Camera.Update(position, 64 * 32, 64 * 32);
+                    position -= TouchManager.Instance.SwipeDirection / Camera.Zoom;
+                    Camera.Update(position,
+                                  Tilemanager.MapBounds.Width,
+                                  Tilemanager.MapBounds.Height);
                     position = Camera.Position;
                     //Camera.Update(GraphicsDevice.Viewport);
 
@@ -230,7 +242,8 @@ namespace KingdomsAndroid
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Viewport = gameView;
 
             spriteBatch.Begin(SpriteSortMode.Deferred,
                 BlendState.AlphaBlend,
@@ -263,6 +276,34 @@ namespace KingdomsAndroid
             //spriteBatch.DrawString(FpsFont, Convert.ToString(MaxTicks), new Vector2(750, 50), Color.White);
 
             spriteBatch.End();
+
+            // 
+            GraphicsDevice.Viewport = sideHUD;
+            spriteBatch.Begin();
+            Texture2D rect = new Texture2D(graphics.GraphicsDevice, sideHUD.Width, sideHUD.Height);
+
+            Color[] data = new Color[sideHUD.Width * sideHUD.Height];
+            for (int i = 0; i < data.Length; ++i) data[i] = Color.Chocolate;
+            rect.SetData(data);
+            
+            spriteBatch.Draw(rect, Vector2.Zero, Color.White);
+
+            spriteBatch.End();
+
+
+            //
+            GraphicsDevice.Viewport = bottomHUD;
+            spriteBatch.Begin();
+            rect = new Texture2D(graphics.GraphicsDevice, bottomHUD.Width, bottomHUD.Height);
+
+            data = new Color[bottomHUD.Width * bottomHUD.Height];
+            for (int i = 0; i < data.Length; ++i) data[i] = Color.Blue;
+            rect.SetData(data);
+            
+            spriteBatch.Draw(rect, Vector2.Zero, Color.White);
+
+            spriteBatch.End();
+
 
             base.Draw(gameTime);
         }

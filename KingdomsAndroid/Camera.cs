@@ -45,15 +45,31 @@ namespace KingdomsAndroid
             zoom = 1f;
         }
 
-        public void Update(Vector2 pos, int MaxOffsetX, int MaxOffsetY)
+        public void Update(Vector2 pos, int maxOffsetX, int maxOffsetY)
         {
+            int xMax, yMax;
+            int viewportZoomWidth = (int)((float)(viewport.Width) / zoom);
+            int viewportZoomHeight = (int)((float)(viewport.Height) / zoom);
+
+            // Handle maps smaller than view port
+            if (maxOffsetX <= viewportZoomWidth)
+                xMax = 0;
+            else
+                xMax = maxOffsetX - viewportZoomWidth;
+
+            if (maxOffsetY <= viewportZoomHeight)
+                yMax = 0;
+            else
+                yMax = maxOffsetY - viewportZoomHeight;
+
+            // Limit camera movement
             if (pos.X < 0)
             {
                 position.X = 0;
             }
-            else if (pos.X > MaxOffsetX - viewport.Width)
+            else if (pos.X > xMax)
             {
-                position.X = MaxOffsetX - viewport.Width;
+                position.X = xMax;
             }
             else
             {
@@ -64,9 +80,9 @@ namespace KingdomsAndroid
             {
                 position.Y = 0;
             }
-            else if (pos.Y > MaxOffsetY - viewport.Height)
+            else if (pos.Y > yMax)
             {
-                position.Y = MaxOffsetY - viewport.Height;
+                position.Y = yMax;
             }
             else
             {

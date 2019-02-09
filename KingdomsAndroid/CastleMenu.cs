@@ -19,9 +19,8 @@ namespace KingdomsAndroid
 
         public CastleMenu(Game1 game)
         {
-            shop = new UnitMenuButton(game.Content);
-            turn = new UnitMenuButton(game.Content);    
-    
+            shop = new UnitMenuButton(game);
+            turn = new UnitMenuButton(game);    
         }
 
         public void Initialize(Vector2 position,Player player)
@@ -48,9 +47,9 @@ namespace KingdomsAndroid
                     Pos = new Vector2(Pos.X,Pos.Y-2);
             }
 
-            shop.Initialize(new Vector2((Pos.X) * 32, Pos.Y * 32));
+            shop.Position = new Vector2((Pos.X) * 32, Pos.Y * 32);
             shop.Text = "Shop";
-            turn.Initialize(new Vector2((Pos.X) * 32, (Pos.Y + 1) * 32));
+            turn.Position = new Vector2((Pos.X) * 32, (Pos.Y + 1) * 32);
             turn.Text = "End Turn";  
         
         
@@ -66,7 +65,7 @@ namespace KingdomsAndroid
             turn.Update();
             
 
-            if (shop.state == UnitMenuButton.BState.pressed)
+            if (shop.state == TouchButton.ButtonState.Clicked)
             {
                 game.Playermanager.player[game.Playermanager.playing].shop = new Shop(game.Playermanager.player[game.Playermanager.playing], game);
                 game.Playermanager.player[game.Playermanager.playing].shop.Initialize(game.Playermanager.player[game.Playermanager.playing]);
@@ -75,7 +74,7 @@ namespace KingdomsAndroid
                 game.Playermanager.player[game.Playermanager.playing].Pstate = Player.state.Shop;
                 game.Playermanager.player[game.Playermanager.playing].HideUnitMenu();
             }
-            else if (turn.state == UnitMenuButton.BState.pressed)
+            else if (turn.state == TouchButton.ButtonState.Clicked)
             {
                 game.Playermanager.player[game.Playermanager.playing].currentUnit = -1;
                 game.Playermanager.player[game.Playermanager.playing].HideUnitMenu();

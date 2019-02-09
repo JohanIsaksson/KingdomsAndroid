@@ -78,13 +78,15 @@
     <Compile Include="Program.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Server.cs" />
     <Compile Include="Shop.cs" />
     <Compile Include="SliderBar.cs" />
-    <Compile Include="Soldat.cs" />
+    <Compile Include="Soldier.cs" />
     <Compile Include="TextBox.cs" />
     <Compile Include="Tile.cs" />
     <Compile Include="TileManager.cs" />
-    <Compile Include="TouchHandler.cs" />
+    <Compile Include="TouchButton.cs" />
+    <Compile Include="TouchManager.cs" />
     <Compile Include="UnitMenu.cs" />
     <Compile Include="UnitMenuButton.cs" />
   </ItemGroup>
@@ -142,6 +144,7 @@
     <Content Include="Content\RangeMark.png" />
     <Content Include="Content\Slider.png" />
     <Content Include="Content\SliderPoint.png" />
+    <Content Include="Content\soldierbuttons.png" />
     <Content Include="Content\TextBox.png" />
     <Content Include="Content\TopBar.png" />
     <Content Include="Content\units2.png" />

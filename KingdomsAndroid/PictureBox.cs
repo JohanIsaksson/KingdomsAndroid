@@ -12,7 +12,7 @@ using Microsoft.Xna.Framework.Media;
 
 namespace KingdomsAndroid
 {
-    public class PictureBox
+    class PictureButton// : TouchButton
     {
         
         public Texture2D image {get;set;}
@@ -25,32 +25,40 @@ namespace KingdomsAndroid
         public Vector2 imgpos{get;set;}
 
         Color transparency;
-        public bool marked { get; set; }
-        public enum BState { hover, normal }
-        public BState state { get; set; }
+        public enum State { marked, normal }
+        public State state { get; set; }
 
-        
+        /*public PictureButton (Game1 g, Vector2 pos, Texture2D bg, SpriteFont sf) :
+            base(g, pos, bg, sf)
+        {
+
+        }*/
+        Game1 game;
+        public PictureButton(Game1 g)
+        {
+            game = g;
+        }
 
         public void Initialize(Vector2 pos)
         {
             backpos = pos;
             imgpos = backpos + new Vector2(16, 16);
             dest_img = new Rectangle((int)imgpos.X, (int)imgpos.Y, 32, 32);
-            marked = false;
         }
 
 
         public void Update()
         {
-            MouseState mus = Mouse.GetState();
+            Rectangle bounds = new Rectangle((int)backpos.X, (int)backpos.Y, background.Width, background.Height);
 
-            if (mus.X >= backpos.X && mus.X <= (backpos.X + background.Width) && mus.Y >= backpos.Y && mus.Y <= (backpos.Y + background.Height))
-                state = BState.hover;  
-            else
-                state = BState.normal;
-
+            TouchManager.Instance.IsClicked(bounds);
+            if (TouchManager.Instance.IsClicked(bounds))
+            {
+                game.Playermanager.player[game.Playermanager.playing].shop.UnMarkAll();
+                state = State.marked;
+            }
         
-            if (state==BState.hover)
+            if (state == State.marked)
                 transparency = new Color(240, 240, 240, 160);
             else
                 transparency = new Color(155, 155, 155, 185);   

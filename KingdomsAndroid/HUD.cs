@@ -60,7 +60,7 @@ namespace KingdomsAndroid
             hpr = new Rectangle(32, 0, 32, 32);
             armor = new Rectangle(64, 0, 32, 32);
             itemfont = game.Content.Load<SpriteFont>("UnitFont");
-            SetInfoBar(new Soldat(game,"Blue"));
+            SetInfoBar(new Soldier(game,"Blue"));
             infoBool = false;
 
             newTexture = game.Content.Load<Texture2D>("NewRound");            
@@ -114,7 +114,7 @@ namespace KingdomsAndroid
                 infoPos.Y += 8;
             infoBar = new Rectangle(0, (int)infoPos.Y, 2000, infoTexture.Height);
         }
-        public void SetInfoBar(Soldat unit)
+        public void SetInfoBar(Soldier unit)
         {
             ad = Convert.ToString(unit.Damage);
             hp = Convert.ToString(unit.Hp);

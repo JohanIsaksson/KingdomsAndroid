@@ -43,8 +43,8 @@ namespace KingdomsAndroid
 
 
       
-        MenuButton Start;
-        MenuButton mainmenu;
+        TouchButton Start;
+        TouchButton mainmenu;
         Vector2 NewBoxpos;
         int Xmid;
         
@@ -72,11 +72,11 @@ namespace KingdomsAndroid
             BG = game.Content.Load<Texture2D>("grassBack");
             
             Start = new MenuButton(game);
-            Start.Initialize(new Vector2((Newbox.Width-256-16),(Newbox.Height-64-8)));
+            Start.Position = new Vector2((Newbox.Width-256-16),(Newbox.Height-64-8));
             Start.Text = "   START";
 
             mainmenu = new MenuButton(game);
-            mainmenu.Initialize(new Vector2((NewBoxpos.X+32+16), (Newbox.Height-64-8)));
+            mainmenu.Position = new Vector2((NewBoxpos.X+32+16), (Newbox.Height-64-8));
             mainmenu.Text = "Main Menu";
 
             BGrect = new Rectangle(0, 0, 1920, 1080);
@@ -107,7 +107,7 @@ namespace KingdomsAndroid
             MouseState mus = Mouse.GetState();
             musp = new Vector2(mus.X, mus.Y);
 
-            if (Start.state == MenuButton.ButtonState.Pressed)
+            if (Start.state == TouchButton.ButtonState.Clicked)
             {
                 game.Playermanager.player[game.Playermanager.playing].Initialize(soldater, "Blue", 1, cash);                
                 game.Playermanager.player[game.Playermanager.notplaying].Initialize(soldater, "Red", 2, cash);
@@ -115,7 +115,7 @@ namespace KingdomsAndroid
 
                 game.state = Game1.GameState.LoadGame;
             }
-            else if (mainmenu.state == MenuButton.ButtonState.Pressed)
+            else if (mainmenu.state == TouchButton.ButtonState.Clicked)
                 game.state = Game1.GameState.MainMenu;
 
             moneybar.Update(GT);
