@@ -46,7 +46,7 @@ namespace KingdomsAndroid
         public static int screenH = 512;
         public static int screenW = 832;
 
-        private Viewport gameView, bottomHUD, sideHUD;
+        private Viewport gameView, sideHUD;
 
 
 
@@ -70,29 +70,21 @@ namespace KingdomsAndroid
             screenH = GraphicsDevice.PresentationParameters.BackBufferHeight;
 
             gameView = new Viewport();
-            gameView.X = 32;
+            gameView.X = 0;
             gameView.Y = 0;
-            gameView.Width = screenW - 128;
-            gameView.Height = screenH - 64;
+            gameView.Width = screenW - 256;
+            gameView.Height = screenH;
             gameView.MinDepth = 0;
             gameView.MaxDepth = 1;
 
             sideHUD = new Viewport();
-            sideHUD.X = screenW - 128+32;
+            sideHUD.X = screenW - 256;
             sideHUD.Y = 0;
-            sideHUD.Width = 128;
-            sideHUD.Height = screenH - 64;
+            sideHUD.Width = 256;
+            sideHUD.Height = screenH;
             sideHUD.MinDepth = 0;
             sideHUD.MaxDepth = 1;
-
-            bottomHUD = new Viewport();
-            bottomHUD.X = 32;
-            bottomHUD.Y = screenH - 64;
-            bottomHUD.Width = screenW;
-            bottomHUD.Height = 64;
-            bottomHUD.MinDepth = 0;
-            bottomHUD.MaxDepth = 1;
-
+            
             base.Initialize();
         }
 
@@ -175,8 +167,8 @@ namespace KingdomsAndroid
 
                 case GameState.LoadGame:
                     //Tilemanager.LoadMap(mapname);
-                    Playermanager.player[Playermanager.playing].NewRound();
-                    Playermanager.player[Playermanager.playing].NewRound();
+                    Playermanager.Players[Playermanager.playing].NewRound();
+                    Playermanager.Players[Playermanager.playing].NewRound();
                     state = GameState.Running;
 
                     break;
@@ -283,27 +275,12 @@ namespace KingdomsAndroid
             Texture2D rect = new Texture2D(graphics.GraphicsDevice, sideHUD.Width, sideHUD.Height);
 
             Color[] data = new Color[sideHUD.Width * sideHUD.Height];
-            for (int i = 0; i < data.Length; ++i) data[i] = Color.Chocolate;
+            for (int i = 0; i < data.Length; ++i) data[i] = Color.DarkGray;
             rect.SetData(data);
             
             spriteBatch.Draw(rect, Vector2.Zero, Color.White);
 
             spriteBatch.End();
-
-
-            //
-            GraphicsDevice.Viewport = bottomHUD;
-            spriteBatch.Begin();
-            rect = new Texture2D(graphics.GraphicsDevice, bottomHUD.Width, bottomHUD.Height);
-
-            data = new Color[bottomHUD.Width * bottomHUD.Height];
-            for (int i = 0; i < data.Length; ++i) data[i] = Color.Blue;
-            rect.SetData(data);
-            
-            spriteBatch.Draw(rect, Vector2.Zero, Color.White);
-
-            spriteBatch.End();
-
 
             base.Draw(gameTime);
         }

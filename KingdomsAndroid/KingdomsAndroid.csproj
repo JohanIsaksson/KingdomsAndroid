@@ -69,6 +69,7 @@
     <Compile Include="ListItem.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="MapList.cs" />
+    <Compile Include="Marker.cs" />
     <Compile Include="MenuButton.cs" />
     <Compile Include="NewGame.cs" />
     <Compile Include="PauseMenu.cs" />
@@ -146,6 +147,7 @@
     <Content Include="Content\SliderPoint.png" />
     <Content Include="Content\soldierbuttons.png" />
     <Content Include="Content\TextBox.png" />
+    <Content Include="Content\TileMarker.png" />
     <Content Include="Content\TopBar.png" />
     <Content Include="Content\units2.png" />
     <Content Include="Game.ico" />

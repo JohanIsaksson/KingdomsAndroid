@@ -25,8 +25,8 @@ namespace KingdomsAndroid
         private List<TouchLocation> prevTouchPoints;
         
         // Filtered and transformed touch points        
-        private List<Vector2> pressPoints;
-        private List<Vector2> clickPoints;
+        public List<Vector2> PressPoints { get; private set;}
+        public List<Vector2> ClickPoints { get; private set; }
 
         private Camera camera;
 
@@ -62,14 +62,14 @@ namespace KingdomsAndroid
         {
             touchPoints = new List<TouchLocation>();
             prevTouchPoints = new List<TouchLocation>();
-            pressPoints = new List<Vector2>();
-            clickPoints = new List<Vector2>();
+            PressPoints = new List<Vector2>();
+            ClickPoints = new List<Vector2>();
             enableSwipe = true;
         }
 
         public bool IsPressed(Rectangle area)
         {
-            foreach (Vector2 point in pressPoints)
+            foreach (Vector2 point in PressPoints)
             {
                 // Transform posistion
                 var transformedPos = (point / camera.Zoom) + camera.Position;
@@ -81,7 +81,7 @@ namespace KingdomsAndroid
 
         public bool IsClicked(Rectangle area)
         {
-            foreach (Vector2 point in clickPoints)
+            foreach (Vector2 point in ClickPoints)
             {
                 // Transform posistion
                 var transformedPos = (point / camera.Zoom) + camera.Position;
@@ -97,8 +97,8 @@ namespace KingdomsAndroid
 
             // Clear all lists
             touchPoints.Clear();
-            pressPoints.Clear();
-            clickPoints.Clear();
+            PressPoints.Clear();
+            ClickPoints.Clear();
 
             // Update touch state
             TouchCollection touchCollection = TouchPanel.GetState();
@@ -117,7 +117,7 @@ namespace KingdomsAndroid
                 {
                     if (touch.State == TouchLocationState.Pressed)
                     {
-                        clickPoints.Add(touch.Position);
+                        ClickPoints.Add(touch.Position);
                     }
                     else if (touch.State == TouchLocationState.Moved)
                     {
@@ -129,7 +129,7 @@ namespace KingdomsAndroid
                             // Allow some errors
                             if (delta.LengthSquared() < 2)
                             {
-                                clickPoints.Add(touch.Position);
+                                ClickPoints.Add(touch.Position);
                             }
                         }
                     }
@@ -152,7 +152,7 @@ namespace KingdomsAndroid
                     }
                     else
                     {
-                        pressPoints.Add(touch.Position);
+                        PressPoints.Add(touch.Position);
                     }
                 }
                 else if (touch.State == TouchLocationState.Released)
@@ -165,12 +165,12 @@ namespace KingdomsAndroid
                         // Allow some errors
                         if (delta.LengthSquared() < 2)
                         {
-                            clickPoints.Add(touch.Position);
+                            ClickPoints.Add(touch.Position);
                         }
                     }
                     else
                     {
-                        clickPoints.Add(touch.Position);
+                        ClickPoints.Add(touch.Position);
                     }
                 }
             }

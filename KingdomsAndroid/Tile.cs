@@ -19,7 +19,7 @@ namespace KingdomsAndroid
 
         public int Type { get; set; }
         public int Armor { get; set; }
-        public int WalkPenalty { get; set; }
+        public int Elevation { get; set; }
         
 
 

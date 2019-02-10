@@ -54,7 +54,7 @@ namespace KingdomsAndroid
             TouchManager.Instance.IsClicked(bounds);
             if (TouchManager.Instance.IsClicked(bounds))
             {
-                game.Playermanager.player[game.Playermanager.playing].shop.UnMarkAll();
+                game.Playermanager.Players[game.Playermanager.playing].shop.UnMarkAll();
                 state = State.marked;
             }
         

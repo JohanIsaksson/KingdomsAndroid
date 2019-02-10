@@ -60,36 +60,6 @@ namespace KingdomsAndroid
         
         }
 
-        /// <summary>
-        /// säger till var menyn ska målas upp
-        /// initialiserar knappen på sin nya position
-        /// </summary>
-        /// <param name="unitpos"></param>
-        public void Initialize(Vector2 unitpos,Player player)
-        {
-            Pos = new Vector2((unitpos.X + 1), (unitpos.Y));
-
-            if (unitpos.X>=(25-3))
-                Pos = new Vector2((unitpos.X - 3), (Pos.Y));
-            else
-                Pos = new Vector2((unitpos.X +1), (Pos.Y));
-            if (unitpos.Y >= (15 - 3))
-                Pos = new Vector2(Pos.X, unitpos.Y - 3);
-            else
-                Pos = new Vector2(Pos.X, unitpos.Y);
-
-
-        Move.Position = new Vector2(Pos.X*32,Pos.Y*32);
-        Move.Text = "Move";
-        Attack.Position = new Vector2(Pos.X * 32, (Pos.Y+1) * 32);
-        Attack.Text="Attack";
-        Occupy.Position = new Vector2(Pos.X * 32, (Pos.Y+2) * 32);
-        Occupy.Text = "Occupy";
-        Finish.Position = new Vector2(Pos.X * 32, (Pos.Y+3) * 32);
-        Finish.Text = "Finish";
-
-        UnitPos = unitpos;
-        }
         
         /// <summary>
         /// kollar om knapparna ska vara aktiva eller ej
@@ -97,22 +67,26 @@ namespace KingdomsAndroid
         /// <param name="game1"></param>
         public void EnableBtn(Game1 game1)
         {
+            // Current player, tile and selected soldier
+            Player player = game1.Playermanager.Players[game1.Playermanager.playing];
+            Soldier soldier = player.soldiers[player.currentUnit];
+            Tile tile = game1.Tilemanager.tileAt(soldier.Pos);
 
-            if (game1.Playermanager.player[game1.Playermanager.playing].soldiers[game1.Playermanager.player[game1.Playermanager.playing].currentUnit].moved == true)
+            if (soldier.moved == true)
                 Move.active = false;
             else
                 Move.active = true;
 
-            if (game1.Playermanager.player[game1.Playermanager.playing].soldiers[game1.Playermanager.player[game1.Playermanager.playing].currentUnit].fight == true && game1.Playermanager.player[game1.Playermanager.playing].soldiers[game1.Playermanager.player[game1.Playermanager.playing].currentUnit].fought==false)
+            if (soldier.fight == true && soldier.fought==false)
                 Attack.active = true;
             else
                 Attack.active = false;
 
-            if (game1.Tilemanager.Map[(int)UnitPos.X + (int)UnitPos.Y * game1.Tilemanager.MapTileHeight].Type == game1.Playermanager.player[game1.Playermanager.notplaying].housetype || game1.Tilemanager.Map[(int)UnitPos.X + (int)UnitPos.Y * game1.Tilemanager.MapTileHeight].Type == 25)
+            if (tile.Type == game1.Playermanager.Players[game1.Playermanager.notplaying].housetype || tile.Type == 25)
                 Occupy.active = true;
-            else if (game1.Tilemanager.Map[(int)UnitPos.X + (int)UnitPos.Y * game1.Tilemanager.MapTileHeight].Type == game1.Playermanager.player[game1.Playermanager.notplaying].castletype && game1.Playermanager.player[game1.Playermanager.playing].soldiers[game1.Playermanager.player[game1.Playermanager.playing].currentUnit].type == 1)
+            else if (tile.Type == game1.Playermanager.Players[game1.Playermanager.notplaying].castletype && soldier.type == 1)
                 Occupy.active = true;
-            else if (game1.Tilemanager.Map[(int)UnitPos.X + (int)UnitPos.Y * game1.Tilemanager.MapTileHeight].Type == 43 && game1.Playermanager.player[game1.Playermanager.playing].soldiers[game1.Playermanager.player[game1.Playermanager.playing].currentUnit].type == 1)
+            else if (tile.Type == 43 && soldier.type == 1)
                 Occupy.active = true;
             else
                 Occupy.active = false;
@@ -135,70 +109,66 @@ namespace KingdomsAndroid
             Occupy.Update();
             Finish.Update();
 
-            Player player = game1.Playermanager.player[game1.Playermanager.playing];
-
+            // Current player, tile and selected soldier
+            Player player = game1.Playermanager.Players[game1.Playermanager.playing];
+            Soldier soldier = player.soldiers[player.currentUnit];
+            Tile tile = game1.Tilemanager.tileAt(soldier.Pos);
 
             if (visible == true)
             { 
             
-            if (Move.state == TouchButton.ButtonState.Clicked)
-            {       
-                // Calculate range for given soldier
-                player.CalculateMoveRange(player.soldiers[player.currentUnit],game1);
-                
-                //paigame1.Playermanager.player[game1.Playermanager.playing].setRange(game1.Playermanager.player[game1.Playermanager.playing].currentUnit,game1);
-                game1.Playermanager.player[game1.Playermanager.playing].Pstate = Player.state.SelectMove;
-
-                game1.Playermanager.player[game1.Playermanager.playing].HideCastleMenu();
-                visible = false;
-            }                
-            else if (Attack.state == TouchButton.ButtonState.Clicked)
-            {
-                game1.Playermanager.player[game1.Playermanager.playing].soldiers[game1.Playermanager.player[game1.Playermanager.playing].currentUnit].moved = true;
-                game1.Playermanager.player[game1.Playermanager.playing].Pstate = Player.state.SelectFight;
-
-                game1.Playermanager.player[game1.Playermanager.playing].HideCastleMenu();
-            }
-            else if (Occupy.state == TouchButton.ButtonState.Clicked)
-            {
-                if (game1.Tilemanager.Map[(int)UnitPos.X + (int)UnitPos.Y * game1.Tilemanager.MapTileHeight].Type ==
-                        game1.Playermanager.player[game1.Playermanager.notplaying].housetype || game1.Tilemanager.Map[(int)UnitPos.X + (int)UnitPos.Y * game1.Tilemanager.MapTileHeight].Type == 25)
+                if (Move.state == TouchButton.ButtonState.Clicked)
                 {
-                    game1.Tilemanager.Map[(int)UnitPos.X + (int)UnitPos.Y * game1.Tilemanager.MapTileHeight].SetTile(game1.Playermanager.player[game1.Playermanager.playing].housetype, (int)UnitPos.X, (int)UnitPos.Y);
-                }
-                else if (game1.Tilemanager.Map[(int)UnitPos.X + (int)UnitPos.Y * game1.Tilemanager.MapTileHeight].Type == 33 ||
-                         game1.Tilemanager.Map[(int)UnitPos.X + (int)UnitPos.Y * game1.Tilemanager.MapTileHeight].Type == 43)
+                    player.MoveArea = soldier.CalculateMoveRange(game1);
+                    player.Pstate = Player.state.SelectMove;
+                    player.HideCastleMenu();
+                    visible = false;
+                }                
+                else if (Attack.state == TouchButton.ButtonState.Clicked)
                 {
-                    game1.Tilemanager.Map[(int)UnitPos.X + (int)UnitPos.Y * game1.Tilemanager.MapTileHeight].SetTile(game1.Playermanager.player[game1.Playermanager.playing].castletype, (int)UnitPos.X, (int)UnitPos.Y);
-                    game1.Playermanager.player[game1.Playermanager.playing].CheckWin();
+                    soldier.moved = true;
+                    player.AttackArea = soldier.CalculateAttackRange(game1);
+                    player.Pstate = Player.state.SelectFight;
+
+                    player.HideCastleMenu();
                 }
-                game1.Playermanager.player[game1.Playermanager.playing].soldiers[game1.Playermanager.player[game1.Playermanager.playing].currentUnit].used = true;
-                game1.Playermanager.player[game1.Playermanager.playing].soldiers[game1.Playermanager.player[game1.Playermanager.playing].currentUnit].moved = true;
-                game1.Playermanager.player[game1.Playermanager.playing].soldiers[game1.Playermanager.player[game1.Playermanager.playing].currentUnit].fought = true;
-                game1.Playermanager.player[game1.Playermanager.playing].currentUnit = -1;
-                game1.Playermanager.player[game1.Playermanager.playing].Pstate = Player.state.SelectUnit;
-                game1.Playermanager.player[game1.Playermanager.playing].HideUnitMenu();
-            }
-            else if (Finish.state == TouchButton.ButtonState.Clicked)
-            {
-                if (game1.Playermanager.player[game1.Playermanager.playing].soldiers[game1.Playermanager.player[game1.Playermanager.playing].currentUnit].fought == true || game1.Playermanager.player[game1.Playermanager.playing].soldiers[game1.Playermanager.player[game1.Playermanager.playing].currentUnit].moved==true)
+                else if (Occupy.state == TouchButton.ButtonState.Clicked)
                 {
-                game1.Playermanager.player[game1.Playermanager.playing].soldiers[game1.Playermanager.player[game1.Playermanager.playing].currentUnit].used = true;
-                game1.Playermanager.player[game1.Playermanager.playing].soldiers[game1.Playermanager.player[game1.Playermanager.playing].currentUnit].fought = true;
-                game1.Playermanager.player[game1.Playermanager.playing].soldiers[game1.Playermanager.player[game1.Playermanager.playing].currentUnit].moved = true;
+                    if (tile.Type ==
+                            game1.Playermanager.Players[game1.Playermanager.notplaying].housetype || tile.Type == 25)
+                    {
+                        tile.SetTile(player.housetype, (int)UnitPos.X, (int)UnitPos.Y);
+                    }
+                    else if (tile.Type == 33 ||
+                             tile.Type == 43)
+                    {
+                        tile.SetTile(player.castletype, (int)UnitPos.X, (int)UnitPos.Y);
+                        player.CheckWin();
+                    }
+                    soldier.used = true;
+                    soldier.moved = true;
+                    soldier.fought = true;
+                    player.currentUnit = -1;
+                    player.Pstate = Player.state.SelectUnit;
+                    player.HideUnitMenu();
                 }
-                game1.Playermanager.player[game1.Playermanager.playing].currentUnit = -1;
-                game1.Playermanager.player[game1.Playermanager.playing].Pstate = Player.state.SelectUnit;
-                game1.Playermanager.player[game1.Playermanager.playing].HideUnitMenu();
-            }
-            }
-
-
-            
+                else if (Finish.state == TouchButton.ButtonState.Clicked)
+                {
+                    if (soldier.fought == true || soldier.moved==true)
+                    {
+                    soldier.used = true;
+                    soldier.fought = true;
+                    soldier.moved = true;
+                    }
+                    player.currentUnit = -1;
+                    player.Pstate = Player.state.SelectUnit;
+                    player.HideUnitMenu();
+                }
+            }            
         }
 
         /// <summary>
-        /// Målar upp knapparna
+        /// Draws the unit menu onto the sprite batch.
         /// </summary>
         /// <param name="SB"></param>
         public void Draw(SpriteBatch SB)
@@ -210,8 +180,6 @@ namespace KingdomsAndroid
                 Occupy.Draw(SB);
                 Finish.Draw(SB);
             }
-        
-        
         }
     }
 }

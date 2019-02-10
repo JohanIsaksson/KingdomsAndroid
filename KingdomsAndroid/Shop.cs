@@ -64,7 +64,7 @@ namespace KingdomsAndroid
 
         public void Initialize(Player pplayer)
         {
-            player=pplayer;
+            player = pplayer;
             
 
             if (player.color=="Blue")
@@ -91,7 +91,7 @@ namespace KingdomsAndroid
                 boxes.Add(new PictureButton(game));
                 boxes[box].state = PictureButton.State.normal;
                 boxes[box].background = game.Content.Load<Texture2D>("PicBox");
-                boxes[box].Initialize(backpos + new Vector2(64, 64) + new Vector2(box * 64, 0) + new Vector2(box*24, 0));
+                boxes[box].Initialize(backpos + new Vector2(64, 64) + new Vector2(box * 32, 0) + new Vector2(box*24, 0));
                 boxes[box].image = unitset;
                 boxes[box].sour_img=new Rectangle(box*32,color*32,32,32);                
             }

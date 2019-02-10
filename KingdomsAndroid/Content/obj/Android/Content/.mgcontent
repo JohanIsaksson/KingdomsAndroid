@@ -29,11 +29,13 @@
     <File>C:/Users/isaks/Documents/KingdomsAndroid/KingdomsAndroid/Content/SliderPoint.png</File>
     <File>C:/Users/isaks/Documents/KingdomsAndroid/KingdomsAndroid/Content/soldierbuttons.png</File>
     <File>C:/Users/isaks/Documents/KingdomsAndroid/KingdomsAndroid/Content/TextBox.png</File>
+    <File>C:/Users/isaks/Documents/KingdomsAndroid/KingdomsAndroid/Content/TileMarker.png</File>
     <File>C:/Users/isaks/Documents/KingdomsAndroid/KingdomsAndroid/Content/TopBar.png</File>
     <File>C:/Users/isaks/Documents/KingdomsAndroid/KingdomsAndroid/Content/UnitFont.spritefont</File>
     <File>C:/Users/isaks/Documents/KingdomsAndroid/KingdomsAndroid/Content/units2.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

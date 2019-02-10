@@ -65,13 +65,14 @@ namespace KingdomsAndroid
         string lastkey;
 
         //int[,] range;
-        List<Vector2> moveArea;
-        List<Vector2> attackArea;
+        public List<Vector2> MoveArea { get; set; }
+        public List<Vector2> AttackArea { get; set; }
 
         Texture2D Trange;
 
         Texture2D mark;
 
+        Marker marker;
 
         //initialiserar de flesta underklasser och fyller i texturer och annat
         public Player(Game1 g)
@@ -90,6 +91,9 @@ namespace KingdomsAndroid
             currentUnit = -1;
             shop = new Shop(this, game);
             hit = game.Content.Load<Texture2D>("Hit");
+
+            marker = new Marker(game, 1000 / 4);
+            //marker.Position = new Vector2(64, 64);
         }
 
         
@@ -234,115 +238,6 @@ namespace KingdomsAndroid
         public void HideCastleMenu()
         {
             castlemenu.visible = false;            
-        }
-
-
-        public void CalculateMoveRange(Soldier s, Game1 game)
-        {
-            List<Vector2> reachableTiles;
-            // Go directl to adjacent tiles
-            if (s.WalkRange > 0)
-            {
-                var left = GetRange(s.Pos + new Vector2(-1, 0), s.WalkRange, game);
-                var down = GetRange(s.Pos + new Vector2(0, 1), s.WalkRange, game);
-                var right = GetRange(s.Pos + new Vector2(1, 0), s.WalkRange, game);
-                var up = GetRange(s.Pos + new Vector2(0, -1), s.WalkRange, game);
-                reachableTiles = new List<Vector2>(left.Count + down.Count + right.Count + up.Count + 1);
-                reachableTiles.AddRange(left);
-                reachableTiles.AddRange(down);
-                reachableTiles.AddRange(right);
-                reachableTiles.AddRange(up);
-            }
-            else
-            {
-                reachableTiles = new List<Vector2>();
-            }
-
-            // Remove duplicate positions
-            int i1 = 0, i2 = 0;
-            while (i1 < reachableTiles.Count)
-            {
-                i2 = i1 + 1;
-                while (i2 < reachableTiles.Count)
-                {
-                    if (reachableTiles[i1].X == reachableTiles[i2].X && 
-                        reachableTiles[i1].Y == reachableTiles[i2].Y)
-                    {
-                        // Remove pos at i2
-                        reachableTiles.RemoveAt(i2);
-                    }
-                    else
-                    {
-                        i2++;
-                    }
-                }
-                i1++;
-            }
-            
-            moveArea = reachableTiles;
-        }
-
-        List<Vector2> GetRange(Vector2 pos, int range, Game1 game)
-        {
-            // Check for blocking units
-            foreach (Player player in game.Playermanager.player)
-            {
-                // TODO: Be able to walk through allied units
-                foreach (Soldier soldier in player.soldiers)
-                {
-                    if (pos == soldier.Pos)
-                    {
-                        return new List<Vector2>();
-                    }
-                }
-            }
-
-            // Check terrain
-            Tile currentTile = game.Tilemanager.tileAt(pos);
-
-            if (currentTile == null)
-                return new List<Vector2>();
-            
-            // Calculate new range
-            int localRange = range - currentTile.WalkPenalty - 1;
-
-            // Decide if further movement is possible
-
-            if (localRange > -1)
-            {
-                List<Vector2> reachableTiles;
-                if (localRange > 0)
-                {
-                    // Spread in all directions
-                    var left = GetRange(pos + new Vector2(-1, 0), localRange, game);
-                    var down = GetRange(pos + new Vector2(0, 1), localRange, game);
-                    var right = GetRange(pos + new Vector2(1, 0), localRange, game);
-                    var up = GetRange(pos + new Vector2(0, -1), localRange, game);
-                    reachableTiles = new List<Vector2>(left.Count + down.Count + right.Count + up.Count + 1);
-                    reachableTiles.Add(pos);
-                    reachableTiles.AddRange(left);
-                    reachableTiles.AddRange(down);
-                    reachableTiles.AddRange(right);
-                    reachableTiles.AddRange(up);
-                }
-                else
-                {
-                    // This is the end tile
-                    reachableTiles = new List<Vector2>(1);
-                    reachableTiles.Add(pos);
-                }
-                return reachableTiles;
-            }
-            return new List<Vector2>();
-        }
-
-public List<Vector2> CalculateAttackRange(Soldier s,
-                                                  List<Vector2> moveRange,
-                                                  Game1 game,
-                                                  int range,
-                                                  bool initial = true)
-        {
-            return null;
         }
 
 
@@ -557,47 +452,50 @@ public List<Vector2> CalculateAttackRange(Soldier s,
         /// <param name="victim"></param>
         /// <param name="range"></param>
         /// <param name="game"></param>
-        public void Fight(int attacker, int victim, int range,Game1 game)
+        public void Fight(int attackerID, int victimID, int range,Game1 game)
         {
             int dmg=0;
-            
+
+            Soldier attacker = soldiers[attackerID];
+            Player victimPlayer = game.Playermanager.Players[game.Playermanager.notplaying];
+            Soldier victim = victimPlayer.soldiers[victimID];
 
             if (range==1)
             {
                 // anfallarnes attack
-                dmg=soldiers[attacker].Damage;
-                game.Playermanager.player[game.Playermanager.notplaying].soldiers[victim].Hp -= (int)(dmg - (dmg * (float)(game.Playermanager.player[game.Playermanager.notplaying].soldiers[victim].Armor) * 0.01f));
-                soldiers[attacker].fought = true;
-                soldiers[attacker].fight = false;
+                dmg = attacker.Damage;
+                victim.Hp -= (int)(dmg - (dmg * (float)(victim.Armor) * 0.01f));
+                attacker.fought = true;
+                attacker.fight = false;
 
                 CheckWin();
 
                 //motattack
-                if (game.Playermanager.player[game.Playermanager.notplaying].soldiers[victim].Hp > 0)
+                if (victim.Hp > 0)
                 {
-                    dmg = (int)((float)game.Playermanager.player[game.Playermanager.notplaying].soldiers[victim].Hp * game.Playermanager.player[game.Playermanager.notplaying].soldiers[victim].hpdmg);
-                    soldiers[attacker].Hp -= dmg - (dmg * (int)((float)soldiers[attacker].Armor * 0.01f));
-                    hud.SetInfoBar(soldiers[attacker]);
+                    dmg = (int)((float)victim.Hp * victim.hpdmg);
+                    attacker.Hp -= dmg - (dmg * (int)((float)attacker.Armor * 0.01f));
+                    hud.SetInfoBar(attacker);
                 }
                 else
-                    game.Playermanager.player[game.Playermanager.notplaying].Death(victim);
+                    victimPlayer.Death(victimID);
 
 
-                if (soldiers[attacker].Hp <= 0)
-                    Death(attacker);
+                if (attacker.Hp <= 0)
+                    Death(attackerID);
                 CheckWin();
 
             }
             else if (range > 1)
             {
                 //din attack  
-                dmg = soldiers[attacker].Damage;
-                game.Playermanager.player[game.Playermanager.notplaying].soldiers[victim].Hp -= (int)(dmg - (dmg * (float)(game.Playermanager.player[game.Playermanager.notplaying].soldiers[victim].Armor) * 0.01f));
-                soldiers[attacker].fought = true;
-                soldiers[attacker].fight = false;
+                dmg = attacker.Damage;
+                victim.Hp -= (int)(dmg - (dmg * (float)(victim.Armor) * 0.01f));
+                attacker.fought = true;
+                attacker.fight = false;
 
-                if (game.Playermanager.player[game.Playermanager.notplaying].soldiers[victim].Hp <= 0)
-                    game.Playermanager.player[game.Playermanager.notplaying].Death(victim);
+                if (victim.Hp <= 0)
+                    victimPlayer.Death(victimID);
 
                 CheckWin();
             }
@@ -662,11 +560,11 @@ public List<Vector2> CalculateAttackRange(Soldier s,
 
             // kolla fiendelaget--------------------
             int enemycastles=0;
-            int enemyunits = game.Playermanager.player[game.Playermanager.notplaying].soldiers.Count;
+            int enemyunits = game.Playermanager.Players[game.Playermanager.notplaying].soldiers.Count;
                         
             foreach (Tile ruta in game.Tilemanager.Map)
             {
-                if (ruta.Type == game.Playermanager.player[game.Playermanager.notplaying].castletype)
+                if (ruta.Type == game.Playermanager.Players[game.Playermanager.notplaying].castletype)
                 {
                     enemycastles++;
                 }
@@ -763,7 +661,7 @@ public List<Vector2> CalculateAttackRange(Soldier s,
                     hover = new Color(0, 230, 0);            
             }
 
-            foreach (Soldier item in game.Playermanager.player[game.Playermanager.notplaying].soldiers)
+            foreach (Soldier item in game.Playermanager.Players[game.Playermanager.notplaying].soldiers)
             {
                 if (tileHover == item.Pos)
                     hover = new Color(260,0, 0);
@@ -780,8 +678,20 @@ public List<Vector2> CalculateAttackRange(Soldier s,
         {
             this.game = game;
 
+            marker.Update(GT);
+
             if (IsPlaying == true)
             {
+
+                // Set marker position
+                if (TouchManager.Instance.ClickPoints.Count == 1)
+                {
+                    Vector2 pos = (TouchManager.Instance.ClickPoints[0] / game.Camera.Zoom) 
+                                    + game.Camera.Position;
+                    marker.Position = new Vector2((float)Math.Floor(pos.X / 32.0) * 32, 
+                                                  (float)Math.Floor(pos.Y / 32.0) * 32);
+                }
+
                 KeyboardState key = Keyboard.GetState();
 
                 if (key.IsKeyDown(Keys.F2) == true)
@@ -880,7 +790,7 @@ public List<Vector2> CalculateAttackRange(Soldier s,
 
 
                 case state.SelectMove:
-                    foreach (Vector2 pos in moveArea)
+                    foreach (Vector2 pos in MoveArea)
                     {
                         if (TouchManager.Instance.IsClicked(new Rectangle((int)pos.X * 32,
                                                                           (int)pos.Y * 32,
@@ -914,13 +824,13 @@ public List<Vector2> CalculateAttackRange(Soldier s,
                                                                       32, 32)))
                         Pstate = state.SelectUnit;
 
-                    foreach (Soldier item in game.Playermanager.player[game.Playermanager.notplaying].soldiers)
+                    foreach (Soldier item in game.Playermanager.Players[game.Playermanager.notplaying].soldiers)
                     {
                         //if (mus.RightButton == ButtonState.Pressed && item.Pos == tileHover
                         if (TouchManager.Instance.IsClicked(new Rectangle((int)soldiers[currentUnit].Pos.X * 32,
                                                                       (int)soldiers[currentUnit].Pos.Y * 32,
                                                                       32, 32)) 
-                            && attackArea.Contains(tileHover))// range[(int)tileHover.X,(int)tileHover.Y]==2)
+                            && AttackArea.Contains(tileHover))// range[(int)tileHover.X,(int)tileHover.Y]==2)
                         {
                             victim = item.nr;
                             victimpos = item.Pos;
@@ -1027,7 +937,7 @@ public List<Vector2> CalculateAttackRange(Soldier s,
                         SB.Draw(Trange, new Vector2(x * 32, y * 32), new Color(0, 100, 150, 150));                        
                     }
                 }*/
-                foreach (Vector2 pos in moveArea)
+                foreach (Vector2 pos in MoveArea)
                     SB.Draw(Trange, pos*32, new Color(0, 100, 150, 150));
                     SB.Draw(mus, new Rectangle((int)tileHover.X * 32, (int)tileHover.Y * 32, 32, 32), new Rectangle(0, 0, 32, 32), hover);
 
@@ -1036,7 +946,7 @@ public List<Vector2> CalculateAttackRange(Soldier s,
             break;
 
                 case state.SelectFight:
-                    foreach (Vector2 pos in attackArea)
+                    foreach (Vector2 pos in AttackArea)
                     {
                         SB.Draw(Trange, pos*32, new Color(200, 20, 20, 150));
                     }
@@ -1085,6 +995,7 @@ public List<Vector2> CalculateAttackRange(Soldier s,
             break;
             }
 
+            marker.Draw(SB);
                     
         }
 
