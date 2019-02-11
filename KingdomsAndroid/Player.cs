@@ -15,12 +15,13 @@ namespace KingdomsAndroid
     {
         Game1 game;
         
-        public List<Soldier> soldiers { get; set; }       
+        public List<Soldier> Soldiers { get; set; }       
         Texture2D unitset;
         
-        public string name { get; set; }
-        public string color { get; set; }
-        public int team { get; set; }
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public string TeamColor { get; set; }
+        public int Team { get; set; }
         public bool IsPlaying { get; set; }
 
         public int castletype { get; set; }
@@ -44,8 +45,8 @@ namespace KingdomsAndroid
 
         Texture2D hit;
         Rectangle hitrect;
-        int victim;
-        Vector2 victimpos;
+        Player victim;
+        Soldier victimSoldier;
 
         public UnitMenu unitmenu { get; set; }
         public CastleMenu castlemenu { get; set; }
@@ -53,8 +54,7 @@ namespace KingdomsAndroid
 
         public enum state { SelectUnit, UnitMenu, SelectMove, Moving, SelectFight, Fighting, Shop, Waiting,End }
         public state Pstate { get; set; }
-
-        public HUD hud { get; set; }
+        
 
         Texture2D musB;
         Vector2 tileHover;        
@@ -79,10 +79,6 @@ namespace KingdomsAndroid
         {
             game = g;
             unitset = game.Content.Load<Texture2D>("units2");
-            musB = game.Content.Load<Texture2D>("mus2");
-            mus = game.Content.Load<Texture2D>("musInGame1");
-            mark = game.Content.Load<Texture2D>("musInGame1");
-            hud = new HUD(game,this);
             unitmenu = new UnitMenu(game, Vector2.Zero, this);
             castlemenu = new CastleMenu(game);
             hover = new Color(255, 255, 255);
@@ -100,23 +96,24 @@ namespace KingdomsAndroid
         /// <summary>
         ///initialiserar spelaren efter inställningar man gjort, t.ex. lag,färg och max antal enheter
         /// </summary>
-        /// <param name="MaxU"></param>
-        /// <param name="colour"></param>
-        /// <param name="lag"></param>
-        /// <param name="cash"></param>
-        public void Initialize(int MaxU,string colour,int lag,int cash)
+        /// <param name="maxSoldiers"></param>
+        /// <param name="color"></param>
+        /// <param name="team"></param>
+        /// <param name="startingMoney"></param>
+        public void Initialize(int maxSoldiers, string color, int team, int playerID, int startingMoney)
         {
+            ID = playerID;
             end = false;
-            money = cash;
-            MaxUnits = MaxU;
-            soldiers = new List<Soldier>();
+            money = startingMoney;
+            MaxUnits = maxSoldiers;
+            Soldiers = new List<Soldier>();
             castlepositions = new List<Vector2>();
             shop.Initialize(this);
             moveSpeed = 25;
             
 
-            color = colour;
-            switch (color)
+            TeamColor = color;
+            switch (TeamColor)
             { 
                 case "Blue":
                     housetype = 26;
@@ -135,22 +132,33 @@ namespace KingdomsAndroid
                     castletype = 31;
                 break;
             }
-            hud.Initialize(this);
-            hud.SetTopBar(this);
 
-            team = lag;
+            Team = team;
             
-        } 
+        }
+
+        // Returns the soldier at the specified position
+        public Soldier SoldierAt(Vector2 pos)
+        {
+            foreach (Soldier s in Soldiers)
+            {
+                if (s.Pos == pos)
+                {
+                    return s;
+                }
+            }
+            return null;
+        }
        
 
-        //skapar ny enhet
-        public void NewUnit(int typ)
+        // Creates a new soldier
+        public void NewSoldier(int typ)
         {
-            if (soldiers.Count < MaxUnits)
+            if (Soldiers.Count < MaxUnits)
             {
-                soldiers.Add(new Soldier(game,color));
-                soldiers[soldiers.Count-1].SetType(typ, (int)castlepos.X, (int)castlepos.Y,soldiers.Count-1);
-                ControlUnit(soldiers.Count - 1);
+                Soldiers.Add(new Soldier(game,TeamColor));
+                Soldiers[Soldiers.Count-1].SetType(typ, (int)castlepos.X, (int)castlepos.Y,Soldiers.Count-1);
+                ControlUnit(Soldiers.Count - 1);
             }
         }
 
@@ -158,18 +166,16 @@ namespace KingdomsAndroid
         //körs varenda gång det är en ny runda, återställer enheter hpregar om möjligt
         public void NewRound()
         {
-            foreach (Soldier unit in soldiers)
+            foreach (Soldier unit in Soldiers)
             {
                 unit.NewRound(); 
                 
             }
             Income();
-            hud.topBool = true;
 
             if (castlepositions.Count>0)
             castlepos = castlepositions[0];
-
-            hud.newBool = true;
+            
             Pstate = state.SelectUnit;
         }
 
@@ -198,7 +204,6 @@ namespace KingdomsAndroid
 
             income = (30 * houses) + (50 * castles);
             money += income;
-            hud.SetTopBar(this);
         }
        
         
@@ -226,7 +231,6 @@ namespace KingdomsAndroid
         public void HideUnitMenu()
         {
             unitmenu.visible = false;
-            hud.infoBool = false;
         }
         //visar och gömmer slottsmenyn
         public void ShowCastleMenu()
@@ -240,87 +244,7 @@ namespace KingdomsAndroid
             castlemenu.visible = false;            
         }
 
-
-
-        /// <summary>
-        /// Calculates the range for the given unit by filling a matrix with possible coordinates
-        /// </summary>
-        /// <param name="selected"></param>
-        /// <param name="pgame"></param>
- /*       public void setRange(int selected, Game1 pgame)
-        {
-            int Xwidth=0;
-
-            for (int X=0; X < 26; X++)
-            {
-                for (int Y=0; Y < 16; Y++)
-                {
-                    range[X,Y] = 0;
-                }
-            }
-
-            for (int y = ((int)soldiers[selected].Pos.Y - soldiers[selected].WalkRange); y <= soldiers[selected].Pos.Y; y++)
-            {
-                for (int x = ((int)soldiers[selected].Pos.X - Xwidth); x <= soldiers[selected].Pos.X + Xwidth; x++)
-                {
-                    if (y >= 0 && y < 16 && x >= 0 && x < 26)
-                    {
-                        bool move = true;
-
-                        foreach (Soldier item in soldiers)
-                        { 
-                        if (item.Pos==new Vector2(x,y))                        
-                            move=false;                        
-                        }
-
-                        foreach (Soldier item in pgame.Playermanager.player[pgame.Playermanager.notplaying].soldiers)
-                        {
-                        if (item.Pos == new Vector2(x, y))
-                                move = false; 
-                        }
-
-                        if (move == true)
-                            range[x, y] = 1;
-                        else
-                            range[x, y] = 0;
-                    }
-                }
-                Xwidth++;
-            }
-
-            Xwidth = 0;
-            for (int y = (((int)soldiers[selected].Pos.Y) + soldiers[selected].WalkRange); y >= soldiers[selected].Pos.Y; y--)
-            {
-                for (int x = (((int)soldiers[selected].Pos.X) - Xwidth); x <= soldiers[selected].Pos.X + Xwidth; x++)
-                {
-                    if (y >= 0 && y < 16 && x >= 0 && x < 26)
-                    {
-                        bool move = true;
-
-                        foreach (Soldier item in soldiers)
-                        {
-                            if (item.Pos == new Vector2(x, y))
-                                move = false;
-                        }
-
-                        foreach (Soldier item in pgame.Playermanager.player[pgame.Playermanager.notplaying].soldiers)
-                        {
-                            if (item.Pos == new Vector2(x, y))
-                                move = false;
-                        }
-
-                        if (move == true)
-                            range[x, y] = 1;
-                        else
-                            range[x, y] = 0;
-                    }
-                }
-                Xwidth++;
-            }
-
-            
-
-        }*/
+        
         //flyttar den markerade soldaten
         public void MoveUnit(GameTime GT)
         {
@@ -329,160 +253,69 @@ namespace KingdomsAndroid
             if (tid > moveSpeed)
             {
                 tid = 0;
-                if (soldiers[currentUnit].Pos.X != newpos.X)
+                if (Soldiers[currentUnit].Pos.X != newpos.X)
                 {
-                    if (soldiers[currentUnit].Pos.X < newpos.X)
-                        soldiers[currentUnit].Pos += new Vector2(0.125f, 0);
-                    else if (soldiers[currentUnit].Pos.X > newpos.X)
-                        soldiers[currentUnit].Pos -= new Vector2(0.125f, 0);
+                    if (Soldiers[currentUnit].Pos.X < newpos.X)
+                        Soldiers[currentUnit].Pos += new Vector2(0.125f, 0);
+                    else if (Soldiers[currentUnit].Pos.X > newpos.X)
+                        Soldiers[currentUnit].Pos -= new Vector2(0.125f, 0);
                 }
-                else if (soldiers[currentUnit].Pos.Y != newpos.Y && soldiers[currentUnit].Pos.X == newpos.X)
+                else if (Soldiers[currentUnit].Pos.Y != newpos.Y && Soldiers[currentUnit].Pos.X == newpos.X)
                 {
-                    if (soldiers[currentUnit].Pos.Y < newpos.Y)
-                        soldiers[currentUnit].Pos += new Vector2(0, 0.125f);
-                    else if (soldiers[currentUnit].Pos.Y > newpos.Y)
-                        soldiers[currentUnit].Pos -= new Vector2(0, 0.125f);
+                    if (Soldiers[currentUnit].Pos.Y < newpos.Y)
+                        Soldiers[currentUnit].Pos += new Vector2(0, 0.125f);
+                    else if (Soldiers[currentUnit].Pos.Y > newpos.Y)
+                        Soldiers[currentUnit].Pos -= new Vector2(0, 0.125f);
                 }
                 else
                 {
-                    soldiers[currentUnit].moved = true;
-                    ShowUnitMenu(soldiers[currentUnit].Pos);
+                    Soldiers[currentUnit].moved = true;
+                    ShowUnitMenu(Soldiers[currentUnit].Pos);
                     Pstate = state.SelectUnit;
                 }
             }
         }
 
 
-
-
-
-        
-        /// <summary>
-        ///räknar ut hur långt soldaten kan slå. möjliga attacker läggs i en tvådimensionell array 
-        /// </summary>
-        /// <param name="selected"></param>
- /*       public void setattack(int selected)
-        {
-            soldiers[currentUnit].fight = false;
-            int Xwidth = 0;
-
-            for (int X = 0; X < 26; X++)
-            {
-                for (int Y = 0; Y < 16; Y++)
-                {
-                    range[X, Y] = 0;
-                }
-            }
-
-            for (int y = ((int)soldiers[selected].Pos.Y - soldiers[selected].AttackRange); y <= soldiers[selected].Pos.Y; y++)
-            {
-                for (int x = ((int)soldiers[selected].Pos.X - Xwidth); x <= soldiers[selected].Pos.X + Xwidth; x++)
-                {
-                    if (y >= 0 && y < 16 && x >= 0 && x < 26)
-                    {
-                        bool attack = true;
-
-                        foreach (Soldier item in soldiers)
-                        {
-                            if (item.Pos == new Vector2(x, y))
-                                attack = false;                            
-                        }
-
-                        foreach (Soldier item in game.Playermanager.player[game.Playermanager.notplaying].soldiers)
-                        {
-                            if (item.Pos == new Vector2(x, y))
-                                soldiers[currentUnit].fight = true;
-                        }
-
-                        if (attack == true)
-                            range[x, y] = 2;
-                        else
-                            range[x, y] = 0;
-                    }
-                }
-                Xwidth++;
-            }
-
-            Xwidth = 0;
-            for (int y = (((int)soldiers[selected].Pos.Y) + soldiers[selected].AttackRange); y >= soldiers[selected].Pos.Y; y--)
-            {
-                for (int x = (((int)soldiers[selected].Pos.X) - Xwidth); x <= soldiers[selected].Pos.X + Xwidth; x++)
-                {
-                    if (y >= 0 && y < 16 && x >= 0 && x < 26)
-                    {
-                        bool attack = true;
-
-                        foreach (Soldier item in soldiers)
-                        {
-                            if (item.Pos == new Vector2(x, y))
-                                attack = false;                            
-                        }
-
-                        
-                        foreach (Soldier item in game.Playermanager.player[game.Playermanager.notplaying].soldiers)
-                        { 
-                        if (item.Pos == new Vector2(x,y))
-                            soldiers[currentUnit].fight = true;                        
-                        }
-                        
-                        if (attack == true)
-                            range[x, y] = 2;
-                        else
-                            range[x, y] = 0;
-                    }
-                }
-                Xwidth++;
-            }
-
-            range[(int)soldiers[selected].Pos.X, (int)soldiers[selected].Pos.Y] = 0;
-
-            if (soldiers[selected].AttackRange == 6)
-            {
-                range[(int)soldiers[selected].Pos.X-1, (int)soldiers[selected].Pos.Y] = 0;
-                range[(int)soldiers[selected].Pos.X+1, (int)soldiers[selected].Pos.Y] = 0;
-                range[(int)soldiers[selected].Pos.X, (int)soldiers[selected].Pos.Y+1] = 0;
-                range[(int)soldiers[selected].Pos.X, (int)soldiers[selected].Pos.Y-1] = 0;
-            }
-        }*/
-
         /// <summary>
         /// räknar ut hur mycket de skadar varandra
         /// </summary>
         /// <param name="attacker"></param>
-        /// <param name="victim"></param>
+        /// <param name="victimSoldier"></param>
         /// <param name="range"></param>
         /// <param name="game"></param>
-        public void Fight(int attackerID, int victimID, int range,Game1 game)
+        public void Fight()
         {
-            int dmg=0;
+            int dmg = 0;
 
-            Soldier attacker = soldiers[attackerID];
-            Player victimPlayer = game.Playermanager.Players[game.Playermanager.notplaying];
-            Soldier victim = victimPlayer.soldiers[victimID];
+            Soldier attacker = Soldiers[currentUnit];
 
-            if (range==1)
+            // Calculate distance between soldiers
+            int range = (int)Math.Abs(attacker.Pos.X - victimSoldier.Pos.X) +
+                        (int)Math.Abs(attacker.Pos.Y - victimSoldier.Pos.Y);
+
+            if (range == 1)
             {
                 // anfallarnes attack
                 dmg = attacker.Damage;
-                victim.Hp -= (int)(dmg - (dmg * (float)(victim.Armor) * 0.01f));
+                victimSoldier.Hp -= (int)(dmg - (dmg * (float)(victimSoldier.Armor) * 0.01f));
                 attacker.fought = true;
                 attacker.fight = false;
 
                 CheckWin();
 
                 //motattack
-                if (victim.Hp > 0)
+                if (victimSoldier.Hp > 0)
                 {
-                    dmg = (int)((float)victim.Hp * victim.hpdmg);
+                    dmg = (int)((float)victimSoldier.Hp * victimSoldier.hpdmg);
                     attacker.Hp -= dmg - (dmg * (int)((float)attacker.Armor * 0.01f));
-                    hud.SetInfoBar(attacker);
                 }
                 else
-                    victimPlayer.Death(victimID);
+                    victim.Death(victimSoldier.ID);
 
 
                 if (attacker.Hp <= 0)
-                    Death(attackerID);
+                    Death(attacker.ID);
                 CheckWin();
 
             }
@@ -490,12 +323,12 @@ namespace KingdomsAndroid
             {
                 //din attack  
                 dmg = attacker.Damage;
-                victim.Hp -= (int)(dmg - (dmg * (float)(victim.Armor) * 0.01f));
+                victimSoldier.Hp -= (int)(dmg - (dmg * (float)(victimSoldier.Armor) * 0.01f));
                 attacker.fought = true;
                 attacker.fight = false;
 
-                if (victim.Hp <= 0)
-                    victimPlayer.Death(victimID);
+                if (victimSoldier.Hp <= 0)
+                    victim.Death(victimSoldier.ID);
 
                 CheckWin();
             }
@@ -509,100 +342,68 @@ namespace KingdomsAndroid
         /// <param name="nr"></param>
         public void Death(int nr)
         {
-            soldiers.RemoveAt(nr);
+            Soldiers.RemoveAt(nr);
 
             int a = 0;
-            foreach (Soldier unit in soldiers)
+            foreach (Soldier unit in Soldiers)
             {
-                unit.nr = a;
+                unit.ID = a;
                 a++;
             }
 
         }
 
-        /// <summary>
-        /// funktion som räknar ut om det är närstrid eller distansattack
-        /// med hjälp av soldatpositionen och fiendens position
-        /// </summary>
-        /// <param name="pos1"></param>
-        /// <param name="pos2"></param>
-        /// <returns></returns>
-        int attackrange(Vector2 pos1,Vector2 pos2)
-        {
-            int range = 0;
-            int Xrange = 0;
-            int Yrange = 0;
-
-            if (pos1.X > pos2.X)
-                Xrange = (int)(pos1.X - pos2.X);
-            else
-                Xrange = (int)(pos2.X - pos1.X);
-
-            if (pos1.Y > pos2.Y)
-                Yrange = (int)(pos1.Y - pos2.Y);
-            else
-                Yrange = (int)(pos2.Y - pos1.Y);
-
-            if (Xrange >= 2 || Yrange >= 2)
-                range = 2;
-            else if (Xrange == 1 && Yrange == 1)
-                range = 2;
-            else
-                range = 1;
-
-
-            return range;
-        
-        }
-
         public void CheckWin()
         {
 
-            // kolla fiendelaget--------------------
-            int enemycastles=0;
-            int enemyunits = game.Playermanager.Players[game.Playermanager.notplaying].soldiers.Count;
-                        
-            foreach (Tile ruta in game.Tilemanager.Map)
-            {
-                if (ruta.Type == game.Playermanager.Players[game.Playermanager.notplaying].castletype)
-                {
-                    enemycastles++;
-                }
-            }
-
-            //kolla egna laget--------------------------------
-            castles=0;
-
-            foreach (Tile ruta in game.Tilemanager.Map)
-            {
-                if (ruta.Type == castletype)
-                {
-                    castles++;
-                }
-            }
-
+            // Check teams
+            var allPlayers = game.Playermanager.Players;
+            List<int> playerCastles = new List<int>(allPlayers.Count);
+            List<int> playerSoldiers = new List<int>(allPlayers.Count);
             
-            if (enemycastles==0 && enemyunits==0)
+            for (int i = 0; i < game.Playermanager.Players.Count; i++)
             {
-                hud.Newtext = "Blue Player won";
-                hud.newBool = true;
-                end = true;
-                
+                playerSoldiers[i] = allPlayers[i].Soldiers.Count;
+
+                foreach (Tile tile in game.Tilemanager.Map)
+                {
+                    if (tile.Type == allPlayers[i].castletype)
+                    {
+                        playerCastles[i]++;
+                    }
+                }
             }
-            else if (castles == 0 && soldiers.Count == 0)
+
+            // Check whether there is a sole survivor
+            int numAliveWithSoldiers = 0;
+            int numAliveWithCastles = 0;
+            foreach (int castles in playerCastles)
             {
-                hud.Newtext = "Red Player won";                
-                hud.newBool = true;
-                end = true;
-                
+                if (castles > 0)
+                {
+                    numAliveWithCastles++;
+                }
             }
-        
-        
+            foreach (int soldiers in playerSoldiers)
+            {
+                if (soldiers > 0)
+                {
+                    numAliveWithSoldiers++;
+                }
+            }
+
+            if (numAliveWithCastles == 1 && numAliveWithSoldiers == 1)
+            {
+                for (int i = 0; i < allPlayers.Count; i++)
+                {
+                    if (playerCastles[i] == 1 && playerSoldiers[i] == 1)
+                    {
+                        end = true;
+                        break;
+                    }
+                }                
+            }
         }
-
-
-
-
 
 
         /// <summary>
@@ -612,73 +413,20 @@ namespace KingdomsAndroid
         public void ControlUnit(int value)
         {
             currentUnit = value;
-            hud.SetInfoBar(soldiers[currentUnit]);
-            hud.infoBool=true;
             HideCastleMenu();
-            ShowUnitMenu(soldiers[currentUnit].Pos);  
-        }
-        /// <summary>
-        /// snabbyte mellan enheter
-        /// </summary>
-        /// <param name="updown"></param>
-        public void QuickSwitch(bool updown)
-        {
-            if (soldiers.Count != 0)
-            {
-                HideUnitMenu();
-
-                if (updown == true)
-                {
-                    if (currentUnit != soldiers.Count - 1)
-                        ControlUnit(currentUnit + 1);
-                    else
-                        ControlUnit(0);
-                }
-                else
-                {
-                    if (currentUnit > 0)
-                        ControlUnit(currentUnit - 1);
-                    else
-                        ControlUnit(soldiers.Count - 1);
-                }
-            }
-        }
-
-
-        
-
-        /// <summary>
-        /// kollar om ´man håller musen över en fiende eller en allierad
-        /// </summary>
-        /// <param name="mus"></param>
-        public void CheckHover(Vector2 mus)
-        {
-            hover = new Color(0, 0, 0);
-
-            foreach (Soldier item in soldiers)
-            {
-                if (tileHover == item.Pos)
-                    hover = new Color(0, 230, 0);            
-            }
-
-            foreach (Soldier item in game.Playermanager.Players[game.Playermanager.notplaying].soldiers)
-            {
-                if (tileHover == item.Pos)
-                    hover = new Color(260,0, 0);
-            }
+            ShowUnitMenu(Soldiers[currentUnit].Pos);  
         }
 
 
         /// <summary>
         /// uppdater spelaren, soldater,hud,mus,tangentbord
         /// </summary>
-        /// <param name="GT"></param>
+        /// <param name="gt"></param>
         /// <param name="game"></param>
-        public void Update(GameTime GT, Game1 game)
+        public void Update(GameTime gt)
         {
-            this.game = game;
 
-            marker.Update(GT);
+            marker.Update(gt);
 
             if (IsPlaying == true)
             {
@@ -692,55 +440,10 @@ namespace KingdomsAndroid
                                                   (float)Math.Floor(pos.Y / 32.0) * 32);
                 }
 
-                KeyboardState key = Keyboard.GetState();
-
-                if (key.IsKeyDown(Keys.F2) == true)
-                    thiskey = "F2";
-                else if (key.IsKeyDown(Keys.F4) == true)
-                    thiskey = "F4";
-                else if (key.IsKeyDown(Keys.F5))
-                    thiskey = "F5";
-                else if (key.IsKeyDown(Keys.F6) == true)
-                    thiskey = "F6";
-                else if (key.IsKeyDown(Keys.F7) == true)
-                    thiskey = "F7";
-                else if (key.IsKeyDown(Keys.F8) == true)
-                    thiskey = "F8";
-                else if (key.IsKeyDown(Keys.Left) == true)
-                    thiskey = "Left";
-                else if (key.IsKeyDown(Keys.Right) == true)
-                    thiskey = "Right";
-
-                else
-                    thiskey = "";
-
-
-                if (thiskey == "F4" && thiskey != lastkey)
-                    hud.topBool = !hud.topBool;
-                else if (thiskey == "F5" && thiskey != lastkey)
-                    hud.infoBool = !hud.infoBool;
-                else if (thiskey == "F6" && thiskey != lastkey)
-                    hud.newBool = !hud.newBool;
-                else if (thiskey == "F8" && thiskey != lastkey)
-                    NewUnit(1);
-                else if (thiskey == "F7" && thiskey != lastkey)
-                    NewUnit(3);
-                else if (thiskey == "F2" && thiskey != lastkey)
-                    NewUnit(2);
-                else if (thiskey == "Left" && thiskey != lastkey)
-                    QuickSwitch(false);
-                else if (thiskey == "Right" && thiskey != lastkey)
-                    QuickSwitch(true);
-
-
-
-                lastkey = thiskey;
-            }
-                //MouseState mus = Mouse.GetState();
-                //musPos = new Vector2(mus.X, mus.Y);
-                //tileHover = new Vector2((float)Math.Floor((double)mus.X / 32), (float)Math.Floor((double)mus.Y / 32));
                 
-                hover = new Color(0, 0, 0);
+            }
+
+            hover = new Color(0, 0, 0);
 
             
             switch (Pstate)
@@ -749,12 +452,12 @@ namespace KingdomsAndroid
 
                     if (currentUnit == -1)
                     {
-                        foreach (Soldier unit in soldiers)
+                        foreach (Soldier unit in Soldiers)
                         {
 
                             if (TouchManager.Instance.IsClicked(new Rectangle((int)unit.Pos.X * 32, (int)unit.Pos.Y * 32, 32, 32)))
                             {
-                                ControlUnit(unit.nr);
+                                ControlUnit(unit.ID);
                                 break;
                             }
 
@@ -771,12 +474,6 @@ namespace KingdomsAndroid
                                 }
                             }
                         }
-                        CheckHover(tileHover);
-                        //if (tileHover.X >= 0 && tileHover.X <= 25 && tileHover.Y >= 0 && tileHover.Y <= 15)
-                        //{
-                        //    if (game.Tilemanager.Map[(int)tileHover.X, (int)tileHover.Y].typ == castletype && mus.LeftButton == ButtonState.Pressed)
-                        //        Pstate = state.Shop;
-                        //}
                     }
                     else if (currentUnit >= 0)
                     {
@@ -801,41 +498,49 @@ namespace KingdomsAndroid
                             Pstate = state.Moving;
                             break;
                         }
-                        /*if (mus.RightButton == ButtonState.Pressed && range[(int)tileHover.X, (int)tileHover.Y] == 1)
-                        {
-                            newpos = tileHover;
-                            Pstate = state.Moving;
-                        }*/
                     }
                     break;
 
 
 
                 case state.Moving:
-                   MoveUnit(GT);
+                   MoveUnit(gt);
                     break;
 
 
 
                 case state.SelectFight:
-                    //if (tileHover == soldat[currentUnit].Pos && mus.RightButton == ButtonState.Pressed)
-                    if (TouchManager.Instance.IsClicked(new Rectangle((int)soldiers[currentUnit].Pos.X * 32,
-                                                                      (int)soldiers[currentUnit].Pos.Y * 32,
+                    if (TouchManager.Instance.IsClicked(new Rectangle((int)Soldiers[currentUnit].Pos.X * 32,
+                                                                      (int)Soldiers[currentUnit].Pos.Y * 32,
                                                                       32, 32)))
-                        Pstate = state.SelectUnit;
-
-                    foreach (Soldier item in game.Playermanager.Players[game.Playermanager.notplaying].soldiers)
                     {
-                        //if (mus.RightButton == ButtonState.Pressed && item.Pos == tileHover
-                        if (TouchManager.Instance.IsClicked(new Rectangle((int)soldiers[currentUnit].Pos.X * 32,
-                                                                      (int)soldiers[currentUnit].Pos.Y * 32,
-                                                                      32, 32)) 
-                            && AttackArea.Contains(tileHover))// range[(int)tileHover.X,(int)tileHover.Y]==2)
+                        Pstate = state.SelectUnit;
+                    }
+                    else
+                    {
+                        // Check if any tile in the highligted area is
+                        // clicked and if there is an enemy unit there.
+                        foreach (Vector2 pos in AttackArea)
                         {
-                            victim = item.nr;
-                            victimpos = item.Pos;
-                            Pstate = state.Fighting;
-                        }                        
+                            if (TouchManager.Instance.IsClicked(new Rectangle((int)pos.X * 32,
+                                                                (int)pos.Y * 32,
+                                                                32, 32)))
+                            {
+                                foreach (Player p in game.Playermanager.Players)
+                                {
+                                    if (p.ID != this.ID)
+                                    {
+                                        Soldier v = p.SoldierAt(pos);
+                                        if (v != null)
+                                        {
+                                            victim = p;
+                                            victimSoldier = v;
+                                            Pstate = state.Fighting;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                     break;
 
@@ -852,22 +557,21 @@ namespace KingdomsAndroid
                     else
                     {
                         tid=0;
-                        Fight(currentUnit, victim,attackrange(soldiers[currentUnit].Pos,victimpos), game);
+                        
+                        Fight();
                         Pstate = state.SelectUnit;
                     }
-
-                    hud.ShowInfoBar();
+                    
                     break;
 
 
 
                 case state.Waiting:
-                    hud.newBool = true;
                     break;
 
                 case state.End:
 
-                    if (end == true && hud.newBool == false)
+                    if (end == true)
                     {
                         this.game.state = Game1.GameState.MainMenu;
 
@@ -877,7 +581,7 @@ namespace KingdomsAndroid
 
 
                 case state.Shop:
-                    shop.Update(GT, this);
+                    shop.Update(gt, this);
                     break;
 
                     
@@ -886,23 +590,19 @@ namespace KingdomsAndroid
             }
 
             if (unitmenu.visible == true)
-                unitmenu.Update(GT, game);
+                unitmenu.Update(gt, game);
 
             if (castlemenu.visible == true)
                 castlemenu.Update(game);
-
-                hud.Update(GT);            
+    
             
         
 
-        foreach (Soldier item in soldiers)
+        foreach (Soldier item in Soldiers)
                 {
-                    item.Update(GT,game);
+                    item.Update(gt,game);
                 }
 
-        if (currentUnit >= 0)
-            hud.SetInfoBar(soldiers[currentUnit]);
-        
         }
 
      
@@ -912,90 +612,62 @@ namespace KingdomsAndroid
         /// <summary>
         /// målar upp soldater, hud och menyer
         /// </summary>
-        /// <param name="SB"></param>
-        public void Draw(SpriteBatch SB)
+        /// <param name="sb"></param>
+        public void Draw(SpriteBatch sb)
         {
 
-            foreach (Soldier item in soldiers)
+            foreach (Soldier item in Soldiers)
             {
                 if (item.used == false)
-                    SB.Draw(unitset, item.Rect, item.Bild, Color.White);
+                    sb.Draw(unitset, item.Rect, item.Bild, Color.White);
                 else
-                    SB.Draw(unitset, item.Rect, item.Bild, Color.Gray);
+                    sb.Draw(unitset, item.Rect, item.Bild, Color.Gray);
             }
                             
             switch (Pstate)
             {            
 
-            case state.SelectMove:
-
-                /*for (int x = 0; x < 32; x++)
-                {
-                    for (int y = 0; y < 32; y++)
-                    { 
-                    if (range[x,y]==1)
-                        SB.Draw(Trange, new Vector2(x * 32, y * 32), new Color(0, 100, 150, 150));                        
-                    }
-                }*/
-                foreach (Vector2 pos in MoveArea)
-                    SB.Draw(Trange, pos*32, new Color(0, 100, 150, 150));
-                    SB.Draw(mus, new Rectangle((int)tileHover.X * 32, (int)tileHover.Y * 32, 32, 32), new Rectangle(0, 0, 32, 32), hover);
-
-                    //SB.Draw(musB, musPos, Color.White);
-                    hud.Draw(SB);
-            break;
+                case state.SelectMove:
+                    foreach (Vector2 pos in MoveArea)
+                        sb.Draw(Trange, pos*32, new Color(0, 100, 150, 150));
+                    break;
 
                 case state.SelectFight:
                     foreach (Vector2 pos in AttackArea)
                     {
-                        SB.Draw(Trange, pos*32, new Color(200, 20, 20, 150));
+                        sb.Draw(Trange, pos*32, new Color(200, 20, 20, 100));
                     }
 
-                    /*for (int x = 0; x < 26; x++)
-                    {
-                        for (int y = 0; y < 16; y++)
-                        {                    
-                            if (range[x,y]==2)
-                                SB.Draw(Trange,new Vector2(x*32,y*32), new Color(200,20,20,150));
-                        }
-                    }*/
-                    //SB.Draw(mus, new Rectangle((int)tileHover.X * 32, (int)tileHover.Y * 32, 32, 32), new Rectangle(0, 0, 32, 32), hover);
-
-
-                    //SB.Draw(musB, musPos, Color.White);
-                hud.Draw(SB);
-            break;
+                    break;
 
                 case state.Fighting:
-                    SB.Draw(hit,new Rectangle((int)victimpos.X*32,(int)victimpos.Y*32,32,32),hitrect,Color.White);
-            break;
+                    sb.Draw(hit,new Rectangle((int)victimSoldier.Pos.X*32,(int)victimSoldier.Pos.Y*32,32,32),hitrect,Color.White);
+                    break;
 
 
-            case state.SelectUnit:
-            if (unitmenu.visible == false && castlemenu.visible==false)
-                SB.Draw(mus, new Rectangle((int)tileHover.X * 32, (int)tileHover.Y * 32, 32, 32), new Rectangle(0, 0, 32, 32), hover);
+                case state.SelectUnit:
 
-            if (currentUnit != -1)
-                SB.Draw(mark, new Vector2(soldiers[currentUnit].Rect.Left,soldiers[currentUnit].Rect.Top), new Color(0, 230, 0));
+                    if (currentUnit != -1)
+                        sb.Draw(mark, new Vector2(Soldiers[currentUnit].Rect.Left,Soldiers[currentUnit].Rect.Top), new Color(0, 230, 0));
                     
-            hud.Draw(SB);
-            unitmenu.Draw(SB);
-            castlemenu.Draw(SB);
 
-            //SB.Draw(musB, musPos, Color.White);
-            break;
+                    unitmenu.Draw(sb);
+                    castlemenu.Draw(sb);
 
-            case state.Shop:
-            shop.Draw(SB);
-            break;
+                    //SB.Draw(musB, musPos, Color.White);
+                    break;
+
+                case state.Shop:
+                    shop.Draw(sb);
+                    break;
             
-            case state.Waiting:
+                case state.Waiting:
 
 
-            break;
+                    break;
             }
 
-            marker.Draw(SB);
+            marker.Draw(sb);
                     
         }
 

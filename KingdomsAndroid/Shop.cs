@@ -67,9 +67,9 @@ namespace KingdomsAndroid
             player = pplayer;
             
 
-            if (player.color=="Blue")
+            if (player.TeamColor=="Blue")
                 color=0;
-            else if (player.color=="Red")
+            else if (player.TeamColor=="Red")
                 color =1;
 
             purchase = new UnitMenuButton(game);
@@ -111,35 +111,19 @@ namespace KingdomsAndroid
 
         public void Update(GameTime GT,Player pplayer)
         {
-            KeyboardState key = Keyboard.GetState();
-            if (key.IsKeyDown(Keys.Escape) == true)
-                player.Pstate = Player.state.SelectUnit;
-
-            MouseState mus = Mouse.GetState();
-            musPos = new Vector2(mus.X, mus.Y);
-
-
-            int typ = 1;
+            int type = 1;
+            int i = 1;
             foreach (PictureButton box in boxes)
-            {                
-                if (box.state == PictureButton.State.marked && mus.LeftButton == ButtonState.Pressed)
+            {
+                box.Update();
+                if (box.state == PictureButton.State.marked)
                 {
-                    foreach (PictureButton boxe in boxes)
-                    {
-                        boxe.state = PictureButton.State.normal;
-                        boxe.background = game.Content.Load<Texture2D>("PicBox");                    
-                    }
-                    box.state = PictureButton.State.marked;
-                    box.background = game.Content.Load<Texture2D>("PicBox3");
-                    break;                    
+                    type = i;
                 }
-                
-            typ++;
-
-            box.Update();
+                i++;                
             }
 
-            switch (typ)
+            switch (type)
             { 
                 case 1:
                     cost = 400;
@@ -203,8 +187,7 @@ namespace KingdomsAndroid
                 }
                 gold -= cost;
                 player.money = gold;
-                player.hud.SetTopBar(player);
-                player.NewUnit(a+1);
+                player.NewSoldier(a+1);
                 player.Pstate = Player.state.SelectUnit;
                 
             }

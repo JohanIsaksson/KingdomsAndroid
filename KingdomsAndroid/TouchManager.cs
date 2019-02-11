@@ -72,7 +72,9 @@ namespace KingdomsAndroid
             foreach (Vector2 point in PressPoints)
             {
                 // Transform posistion
-                var transformedPos = (point / camera.Zoom) + camera.Position;
+                var transformedPos = (point / camera.Zoom) + 
+                                     camera.Position + 
+                                     new Vector2(32*camera.Zoom, 0);
                 if (area.Contains(transformedPos))
                     return true;
             }
@@ -84,7 +86,9 @@ namespace KingdomsAndroid
             foreach (Vector2 point in ClickPoints)
             {
                 // Transform posistion
-                var transformedPos = (point / camera.Zoom) + camera.Position;
+                var transformedPos = (point / camera.Zoom) +
+                                      camera.Position +
+                                     new Vector2(32 * camera.Zoom, 0);
                 if (area.Contains(transformedPos))
                     return true;
             }

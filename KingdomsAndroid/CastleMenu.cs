@@ -67,18 +67,18 @@ namespace KingdomsAndroid
 
             if (shop.state == TouchButton.ButtonState.Clicked)
             {
-                game.Playermanager.Players[game.Playermanager.playing].shop = new Shop(game.Playermanager.Players[game.Playermanager.playing], game);
-                game.Playermanager.Players[game.Playermanager.playing].shop.Initialize(game.Playermanager.Players[game.Playermanager.playing]);
-                game.Playermanager.Players[game.Playermanager.playing].shop.Gold(game.Playermanager.Players[game.Playermanager.playing]);
-                game.Playermanager.Players[game.Playermanager.playing].currentUnit = -1;
-                game.Playermanager.Players[game.Playermanager.playing].Pstate = Player.state.Shop;
-                game.Playermanager.Players[game.Playermanager.playing].HideUnitMenu();
+                game.Playermanager.Players[game.Playermanager.CurrentPlayerID].shop = new Shop(game.Playermanager.Players[game.Playermanager.CurrentPlayerID], game);
+                game.Playermanager.Players[game.Playermanager.CurrentPlayerID].shop.Initialize(game.Playermanager.Players[game.Playermanager.CurrentPlayerID]);
+                game.Playermanager.Players[game.Playermanager.CurrentPlayerID].shop.Gold(game.Playermanager.Players[game.Playermanager.CurrentPlayerID]);
+                game.Playermanager.Players[game.Playermanager.CurrentPlayerID].currentUnit = -1;
+                game.Playermanager.Players[game.Playermanager.CurrentPlayerID].Pstate = Player.state.Shop;
+                game.Playermanager.Players[game.Playermanager.CurrentPlayerID].HideUnitMenu();
             }
             else if (turn.state == TouchButton.ButtonState.Clicked)
             {
-                game.Playermanager.Players[game.Playermanager.playing].currentUnit = -1;
-                game.Playermanager.Players[game.Playermanager.playing].HideUnitMenu();
-                game.Playermanager.Players[game.Playermanager.playing].EndRound();
+                game.Playermanager.Players[game.Playermanager.CurrentPlayerID].currentUnit = -1;
+                game.Playermanager.Players[game.Playermanager.CurrentPlayerID].HideUnitMenu();
+                game.Playermanager.Players[game.Playermanager.CurrentPlayerID].EndRound();
                 game.Playermanager.NewRound();
 
             }

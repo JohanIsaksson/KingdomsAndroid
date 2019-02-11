@@ -167,8 +167,8 @@ namespace KingdomsAndroid
 
                 case GameState.LoadGame:
                     //Tilemanager.LoadMap(mapname);
-                    Playermanager.Players[Playermanager.playing].NewRound();
-                    Playermanager.Players[Playermanager.playing].NewRound();
+                    Playermanager.Players[Playermanager.CurrentPlayerID].NewRound();
+                    Playermanager.Players[Playermanager.CurrentPlayerID].NewRound();
                     state = GameState.Running;
 
                     break;

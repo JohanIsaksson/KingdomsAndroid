@@ -109,8 +109,9 @@ namespace KingdomsAndroid
 
             if (Start.state == TouchButton.ButtonState.Clicked)
             {
-                game.Playermanager.Players[game.Playermanager.playing].Initialize(soldater, "Blue", 1, cash);                
-                game.Playermanager.Players[game.Playermanager.notplaying].Initialize(soldater, "Red", 2, cash);
+                var playerList = game.Playermanager.Players;
+                playerList[0].Initialize(soldater, "Blue", 1, 0, cash);
+                playerList[1].Initialize(soldater, "Red", 2, 1, cash);
                 game.mapname = maplist.map + ".map";      
 
                 game.state = Game1.GameState.LoadGame;

@@ -14,11 +14,12 @@ namespace KingdomsAndroid
     public class PlayerManager
     {
         Game1 game;
-        public Player[] Players { get; set; }
+        public List<Player> Players { get; set; }
+        public Player CurrentPlayer { get; set; }
         ContentManager Content;
-        int totalplayers;
-        public int playing { get; set; }
-        public int notplaying { get; set; }
+        int totalPlayers;
+        public int CurrentPlayerID { get; set; }
+        //public int notplaying { get; set; }
         int MaxU = 25;
 
         int thiskey;
@@ -28,58 +29,42 @@ namespace KingdomsAndroid
         /// skapar x antal spelare beroende på vad man val i menyerna innan
         /// ställer även in vad man valt, enheter
         /// </summary>
-        /// <param name="Pgame"></param>
-        /// <param name="players"></param>
-        /// <param name="MaxU"></param>
-        public PlayerManager(Game1 Pgame, int players, int MaxU)
+        /// <param name="g"></param>
+        /// <param name="numPlayers"></param>
+        /// <param name="numSoldiers"></param>
+        public PlayerManager(Game1 g, int numPlayers, int numSoldiers)
         {
-            game = Pgame;
-            Players = new Player[players];
-            totalplayers = players;
+            game = g;
+            Players = new List<Player>();
+            totalPlayers = numPlayers;
             Content = game.Content;
-            playing = 0;
-            
-            NewGame();     
-            
-            
-        }
+            CurrentPlayerID = 0;
 
-        /// <summary>
-        /// skapar ett nytt game
-        /// </summary>
-        public void NewGame()
-        {
-
-            for (int Play = 0; Play < totalplayers; Play++)
+            for (int i = 0; i < totalPlayers; i++)
             {
-                Players[Play] = new Player(game);
-                switch (Play)
+                Player p = new Player(game);
+                switch (i)
                 {
                     case 0:
-                        Players[Play].Initialize(MaxU, "Blue", 0,0);
-                        Players[Play].Pstate = Player.state.Waiting;
+                        p.Initialize(numSoldiers, "Blue", 0, 0, 0);
+                        p.Pstate = Player.state.Waiting;
                         break;
                     case 1:
-                        Players[Play].Initialize(MaxU, "Red", 1,0);
-                        Players[Play].Pstate = Player.state.Waiting;
+                        p.Initialize(numSoldiers, "Red", 1, 1, 0);
+                        p.Pstate = Player.state.Waiting;
                         break;
-                    //case 2:
-                    //    player[Play].Initialize(MaxU, "Green", 2);
-                    //    player[Play].Pstate = Player.state.Waiting;
-                    //    break;
-                    //case 3:
-                    //    player[Play].Initialize(MaxU, "Yellow", 3);
-                    //    player[Play].Pstate = Player.state.Waiting;
-                    //    break;
                 }
-                Players[Play].Pstate = Player.state.Waiting;
+                p.Pstate = Player.state.Waiting;
+                Players.Add(p);
             }
 
-
-            playing = 0;
-            notplaying = 1;
-            Players[playing].IsPlaying = true;
-            Players[playing].Pstate = Player.state.SelectUnit;
+            CurrentPlayerID = 0;
+            CurrentPlayer = Players[CurrentPlayerID];
+            CurrentPlayer.IsPlaying = true;
+            Players[CurrentPlayerID].NewRound();
+            CurrentPlayer.Pstate = Player.state.SelectUnit;
+          
+            
         }
 
         /// <summary>
@@ -87,52 +72,32 @@ namespace KingdomsAndroid
         /// </summary>
         public void NewRound()
         {
-            
-            Players[playing].IsPlaying = false;
-            Players[playing].Pstate = Player.state.Waiting;
-            notplaying = playing;            
+            // Inactivate current player
+            CurrentPlayer.IsPlaying = false;
+            CurrentPlayer.Pstate = Player.state.Waiting;
 
-            if (playing < 1)
-            {
-            playing++;
-            Players[playing].IsPlaying = true;
-            Players[playing].NewRound();
-            Players[playing].Pstate = Player.state.SelectUnit;
-            }
-            else
-            {
-                playing = 0;
-                Players[playing].IsPlaying = true;
-                Players[playing].NewRound();
-                Players[playing].Pstate = Player.state.SelectUnit;
-            }
+            // Next player
+            CurrentPlayerID = (CurrentPlayerID + 1) % totalPlayers;
+
+            // Activate new player
+            Players[CurrentPlayerID].IsPlaying = true;
+            Players[CurrentPlayerID].NewRound();
+            Players[CurrentPlayerID].Pstate = Player.state.SelectUnit;
+            CurrentPlayer = Players[CurrentPlayerID];
+
         }
         
 
         /// <summary>
         /// uppdaterar spelarna
         /// </summary>
-        /// <param name="GT"></param>
+        /// <param name="gt"></param>
         /// <param name="game"></param>
-        public void Update(GameTime GT, Game1 game)
+        public void Update(GameTime gt, Game1 game)
         {
-            for (int Play = 0; Play < totalplayers; Play++)                
-                Players[Play].Update(GT,game);
+            foreach (Player p in Players)                
+                p.Update(gt);
 
-            KeyboardState key = Keyboard.GetState();
-            
-            if (key.IsKeyDown(Keys.N) == true)
-                thiskey = 1;
-            else
-                thiskey = 0;
-
-            if (thiskey == 1 && thiskey != lastkey)
-            {
-                Players[playing].EndRound();
-                NewRound();
-            }
-
-            lastkey = thiskey;
         }
 
         /// <summary>
@@ -141,7 +106,7 @@ namespace KingdomsAndroid
         /// <param name="SB"></param>
         public void Draw(SpriteBatch SB)
         {
-            if (playing == 1)
+            if (CurrentPlayerID == 1)
             {
                 for (int Play = 0; Play < 2; Play++)
                     Players[Play].Draw(SB);
@@ -173,9 +138,9 @@ namespace KingdomsAndroid
             for (int Play=0; Play <= 3; Play++)
             {
                 StreamWriter swFile = new StreamWriter(path + Convert.ToString(Play) + ".txt");
-                swFile.WriteLine(Players[Play].name);
-                swFile.WriteLine(Players[Play].color);
-                swFile.WriteLine(Players[Play].team);
+                swFile.WriteLine(Players[Play].Name);
+                swFile.WriteLine(Players[Play].TeamColor);
+                swFile.WriteLine(Players[Play].Team);
 
                 swFile.Dispose();
                 swFile.Close();

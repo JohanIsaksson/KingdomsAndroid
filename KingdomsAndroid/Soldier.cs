@@ -21,7 +21,7 @@ namespace KingdomsAndroid
         public bool fight { get; set; }
 
         public int type { get; set; }
-        public int nr { get; set; }
+        public int ID { get; set; }
         public int Hp { get; set; }
         public int HpReg { get; set; }
         public int Damage { get; set; }
@@ -121,7 +121,7 @@ namespace KingdomsAndroid
             Level = 0;
             Hp = 100;
             Pos = new Vector2(x, y);
-            nr = Unr;
+            ID = Unr;
             fought = false;
         }
 
@@ -286,7 +286,7 @@ namespace KingdomsAndroid
             foreach (Player player in game.Playermanager.Players)
             {
                 // TODO: Be able to walk through allied units
-                foreach (Soldier soldier in player.soldiers)
+                foreach (Soldier soldier in player.Soldiers)
                 {
                     if (pos == soldier.Pos)
                     {

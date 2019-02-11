@@ -65,11 +65,11 @@ namespace KingdomsAndroid
         /// kollar om knapparna ska vara aktiva eller ej
         /// </summary>
         /// <param name="game1"></param>
-        public void EnableBtn(Game1 game1)
+        public void EnableButtons(Game1 game1)
         {
             // Current player, tile and selected soldier
-            Player player = game1.Playermanager.Players[game1.Playermanager.playing];
-            Soldier soldier = player.soldiers[player.currentUnit];
+            Player player = game1.Playermanager.Players[game1.Playermanager.CurrentPlayerID];
+            Soldier soldier = player.Soldiers[player.currentUnit];
             Tile tile = game1.Tilemanager.tileAt(soldier.Pos);
 
             if (soldier.moved == true)
@@ -82,14 +82,19 @@ namespace KingdomsAndroid
             else
                 Attack.active = false;
 
-            if (tile.Type == game1.Playermanager.Players[game1.Playermanager.notplaying].housetype || tile.Type == 25)
-                Occupy.active = true;
-            else if (tile.Type == game1.Playermanager.Players[game1.Playermanager.notplaying].castletype && soldier.type == 1)
-                Occupy.active = true;
-            else if (tile.Type == 43 && soldier.type == 1)
-                Occupy.active = true;
-            else
-                Occupy.active = false;
+            Occupy.active = false;
+            foreach (Player p in game1.Playermanager.Players)
+            {
+                if (tile.Type == p.housetype || 
+                    tile.Type == 25 ||
+                    (tile.Type == p.castletype && soldier.type == 1) ||
+                    (tile.Type == 43 && soldier.type == 1))
+                {
+                    Occupy.active = true;
+                    break;
+                }
+            }
+                
 
         }
         
@@ -102,7 +107,7 @@ namespace KingdomsAndroid
         public void Update(GameTime GT, Game1 game1)
         {
 
-            EnableBtn(game1);
+            EnableButtons(game1);
                         
             Move.Update();
             Attack.Update();
@@ -110,8 +115,8 @@ namespace KingdomsAndroid
             Finish.Update();
 
             // Current player, tile and selected soldier
-            Player player = game1.Playermanager.Players[game1.Playermanager.playing];
-            Soldier soldier = player.soldiers[player.currentUnit];
+            Player player = game1.Playermanager.Players[game1.Playermanager.CurrentPlayerID];
+            Soldier soldier = player.Soldiers[player.currentUnit];
             Tile tile = game1.Tilemanager.tileAt(soldier.Pos);
 
             if (visible == true)
@@ -134,17 +139,21 @@ namespace KingdomsAndroid
                 }
                 else if (Occupy.state == TouchButton.ButtonState.Clicked)
                 {
-                    if (tile.Type ==
-                            game1.Playermanager.Players[game1.Playermanager.notplaying].housetype || tile.Type == 25)
+                    foreach (Player p in game1.Playermanager.Players)
                     {
-                        tile.SetTile(player.housetype, (int)UnitPos.X, (int)UnitPos.Y);
+                        if (tile.Type == p.housetype || tile.Type == 25)
+                        {
+                            tile.SetTile(player.housetype, (int)UnitPos.X, (int)UnitPos.Y);
+                            break;
+                        }
+                        else if (tile.Type == 33 || tile.Type == 43)
+                        {
+                            tile.SetTile(player.castletype, (int)UnitPos.X, (int)UnitPos.Y);
+                            player.CheckWin();
+                            break;
+                        }
                     }
-                    else if (tile.Type == 33 ||
-                             tile.Type == 43)
-                    {
-                        tile.SetTile(player.castletype, (int)UnitPos.X, (int)UnitPos.Y);
-                        player.CheckWin();
-                    }
+                    
                     soldier.used = true;
                     soldier.moved = true;
                     soldier.fought = true;

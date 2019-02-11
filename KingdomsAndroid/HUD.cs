@@ -75,12 +75,12 @@ namespace KingdomsAndroid
         {
             player = play;
 
-            if (player.color == "Blue")
+            if (player.TeamColor == "Blue")
             {
                 Newtext = "Blue player's turn";
                 Fontcolor = new Color(10, 100, 255);
             }
-            else if (player.color == "Red")
+            else if (player.TeamColor == "Red")
             {
                 Newtext = "Red player's turn";
                 Fontcolor = new Color(255, 0, 0);
